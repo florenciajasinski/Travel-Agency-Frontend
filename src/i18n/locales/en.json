@@ -6,9 +6,38 @@
     "filter": "Filter",
     "requestError": "Unable to complete the request. Please try again later."
   },
+  "cities": {
+  "title": "Cities",
+  "create": {
+    "title": "Add City"
+  },
+  "table": {
+    "columns": {
+      "id": "ID",
+      "name": "Name",
+      "incomingFlights": "Incoming Flights",
+      "outgoingFlights": "Outgoing Flights"
+    }
+  },
+  "create": {
+      "description": "Complete to create a new City",
+      "title": "Add City",
+      "success": "City created successfully",
+      "error": "Not able to create city"
+    },
+    "update": {
+      "description": "Complete the form to update the city",
+      "title": "Update City",
+      "success": "City updated successfully",
+      "error": "Not able to update city"
+    }
+},
+"airlines": {
+  "all": "All Airlines"
+},
   "greetings": {
     "rootLayout": "Root layout! I render on all paths (in English)",
-    "exactPath": "Hello {exactPath} exact path!",
+    "exactPath": "Hello {exactPath} exact hhhh!",
     "privateLayout": "Hello private layout! I render on all paths inside the /_private/ folder",
     "publicLayout": "Public layout! I render on all paths inside the /(public)/ folder",
     "home": "Welcome Home!"
@@ -94,8 +123,9 @@
   },
   "navigation": {
     "links": {
-      "home": "Home",
-      "dashboard": "Dashboard",
+      "cities": "Cities",
+      "airlines": "Airlines",
+      "flights": "Flights",
       "users": "Users"
     }
   }

@@ -1,16 +1,11 @@
 import { useTranslation } from "@/i18n";
-import { HamburgerMenu } from "./hamburger-menu";
 
 export const Header = () => {
   const { t } = useTranslation();
 
   return (
-    <header className="flex items-center justify-between bg-background-brand-default p-4 text-text-brand-on-brand">
-      <img className="h-10" src="./logo.svg" />
-
-      <span>{t("greetings.rootLayout")}</span>
-
-      <HamburgerMenu />
+    <header className="py-10 text-center">
+      <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">Travel Agency</h1>
     </header>
   );
 };

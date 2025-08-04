@@ -13,7 +13,7 @@ export const getAirlineSchema = () => {
   return airlineSchema
     .omit({ id: true })
     .extend({
-      name: z.string().min(1, { message: i18n.t("validation.required") }),
+      name: z.string().min(1, { message: i18n.t("airlines.validation.required") }),
     })
     .extend({
       description: z.string().optional(),

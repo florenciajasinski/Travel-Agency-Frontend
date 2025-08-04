@@ -20,6 +20,11 @@
       "outgoingFlights": "Outgoing Flights"
     }
   },
+  "validation": {
+    "required": "City name is required.",
+    "minLength": "City name must be at least 3 characters long.",
+    "invalidNumber": "Please enter a valid number."
+  },
   "create": {
       "description": "Complete to create a new City",
       "title": "Add City",
@@ -47,6 +52,7 @@
     "email": "Email",
     "password": "Password",
     "name": "Name",
+    "airlines": "Airlines",
     "confirmPassword": "Confirm Password",
     "passwordMustInclude": "Password must include",
     "errors": {

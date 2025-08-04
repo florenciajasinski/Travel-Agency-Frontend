@@ -39,8 +39,6 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
     resolver: zodResolver(getCitySchema()),
     defaultValues: {
       name: city?.name ?? "",
-      incomingFlights: city?.incomingFlights ?? 0,
-      outgoingFlights: city?.outgoingFlights ?? 0,
       airlineIds:
         (city as City | undefined)?.airlines?.map((a) => {
           return a.id;
@@ -106,29 +104,6 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
             <Label htmlFor="name">{t("form.name")}</Label>
             <Input {...register("name")} id="name" size="sm" />
             <ErrorMessage errorMessage={errors?.name?.message} />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="incomingFlights">{t("form.incomingFlights")}</Label>
-              <Input
-                min={0}
-                type="number"
-                {...register("incomingFlights", { valueAsNumber: true })}
-                id="incomingFlights"
-              />
-              <ErrorMessage errorMessage={errors?.incomingFlights?.message} />
-            </div>
-
-            <div>
-              <Label htmlFor="outgoingFlights">{t("form.outgoingFlights")}</Label>
-              <Input
-                min={0}
-                type="number"
-                {...register("outgoingFlights", { valueAsNumber: true })}
-                id="outgoingFlights"
-              />
-              <ErrorMessage errorMessage={errors?.outgoingFlights?.message} />
-            </div>
           </div>
           <div className="flex flex-col gap-2">
             <Label>{t("form.airlines")}</Label>

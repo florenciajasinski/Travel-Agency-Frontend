@@ -14,7 +14,7 @@ export const getCitySchema = () => {
   return citySchema
     .omit({ id: true })
     .extend({
-      name: z.string().min(1, { message: i18n.t("validation.required") }),
+      name: z.string().min(1, { message: i18n.t("cities.validation.required") }),
     })
     .extend({
       incomingFlights: z.number().min(0),

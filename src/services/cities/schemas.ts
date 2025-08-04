@@ -7,6 +7,7 @@ export const citySchema = z.object({
   name: z.string(),
   incomingFlights: z.number().int().nonnegative(),
   outgoingFlights: z.number().int().nonnegative(),
+  airlineIds: z.array(z.coerce.number()).optional(),
 });
 
 export const getCitySchema = () => {
@@ -18,5 +19,6 @@ export const getCitySchema = () => {
     .extend({
       incomingFlights: z.number().min(0),
       outgoingFlights: z.number().min(0),
+      airlineIds: z.array(z.coerce.number()).optional(),
     });
 };

@@ -3,10 +3,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button, Dialog, ErrorMessage, Input, Label, toast } from "@/components/ui";
 import { useTranslation } from "@/i18n";
-import { useCreateCityMutation, useUpdateCityMutation } from "@/services";
+import { useAllAirlinesQuery } from "@/services/airlines/actions";
+import { useCreateCityMutation, useUpdateCityMutation } from "@/services/cities/actions";
 import { getCitySchema } from "@/services/cities/schemas";
-import type { City } from "@/services/cities/types";
-import type { CreateCity, UpdateCity } from "@/services/cities/types";
+import type { City, CreateCity, UpdateCity } from "@/services/cities/types";
 import { handleAxiosFieldErrors } from "@/utils";
 
 type UpsertCityDialogProps = {
@@ -18,6 +18,9 @@ type UpsertCityDialogProps = {
 export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialogProps) => {
   const { t } = useTranslation();
 
+  const { data: airlinesData, isLoading: isLoadingAirlines } = useAllAirlinesQuery();
+  const airlines = Array.isArray(airlinesData) ? airlinesData : [];
+
   const { isPending: isCreating, mutate: createCity } = useCreateCityMutation();
   const { isPending: isUpdating, mutate: updateCity } = useUpdateCityMutation();
 
@@ -25,25 +28,34 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
   const isPending = isUpdating || isCreating;
 
   const {
-    control,
     formState: { errors },
     handleSubmit,
     register,
     reset,
     setError,
-  } = useForm({
+    watch,
+  } = useForm<CreateCity | UpdateCity>({
     mode: "onTouched",
     resolver: zodResolver(getCitySchema()),
-    values: {
+    defaultValues: {
       name: city?.name ?? "",
       incomingFlights: city?.incomingFlights ?? 0,
       outgoingFlights: city?.outgoingFlights ?? 0,
+      airlineIds:
+        (city as City | undefined)?.airlines?.map((a) => {
+          return a.id;
+        }) ?? [],
     },
   });
 
   const onSubmit: SubmitHandler<CreateCity | UpdateCity> = (data) => {
+    const payload = {
+      ...data,
+      airlineIds: data.airlineIds ?? [],
+    };
+
     if (isNewCity) {
-      return createCity(data, {
+      return createCity(payload as CreateCity, {
         onSuccess: () => {
           toast.success(t("cities.create.success"));
           onOpenChange(false);
@@ -56,7 +68,7 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
     }
 
     return updateCity(
-      { ...data, id: city.id },
+      { ...(payload as UpdateCity), id: city.id },
       {
         onSuccess: () => {
           toast.success(t("cities.update.success"));
@@ -74,18 +86,16 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
     if (!open) {
       reset();
     }
-
     onOpenChange(open);
   };
 
   return (
     <Dialog.Root onOpenChange={handleOpenChange} open={isOpen}>
-      <Dialog.Content isDismissible={!isUpdating && !isCreating}>
+      <Dialog.Content isDismissible={!isPending}>
         <Dialog.Header>
           <Dialog.Title>
             {isNewCity ? t("cities.create.title") : t("cities.update.title")}
           </Dialog.Title>
-
           <Dialog.Description>
             {isNewCity ? t("cities.create.description") : t("cities.update.description")}
           </Dialog.Description>
@@ -94,17 +104,56 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-2">
             <Label htmlFor="name">{t("form.name")}</Label>
-
             <Input {...register("name")} id="name" size="sm" />
-
             <ErrorMessage errorMessage={errors?.name?.message} />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="incomingFlights">{t("form.incomingFlights")}</Label>
+              <Input
+                min={0}
+                type="number"
+                {...register("incomingFlights", { valueAsNumber: true })}
+                id="incomingFlights"
+              />
+              <ErrorMessage errorMessage={errors?.incomingFlights?.message} />
+            </div>
+
+            <div>
+              <Label htmlFor="outgoingFlights">{t("form.outgoingFlights")}</Label>
+              <Input
+                min={0}
+                type="number"
+                {...register("outgoingFlights", { valueAsNumber: true })}
+                id="outgoingFlights"
+              />
+              <ErrorMessage errorMessage={errors?.outgoingFlights?.message} />
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label>{t("form.airlines")}</Label>
+
+            {isLoadingAirlines ? (
+              <p className="text-muted-foreground text-sm">{t("common.loading")}</p>
+            ) : (
+              <div className="flex max-h-40 flex-col gap-1 overflow-y-auto rounded border p-2">
+                {airlines.map((airline) => {
+                  return (
+                    <label className="flex items-center gap-2" key={airline.id}>
+                      <input type="checkbox" value={airline.id} {...register("airlineIds")} />
+                      {airline.name}
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+            <ErrorMessage errorMessage={errors?.airlineIds?.message} />
           </div>
 
           <Dialog.Footer>
             <Dialog.Close disabled={isPending} asChild>
               <Button variant="outlined">{t("buttons.cancel")}</Button>
             </Dialog.Close>
-
             <Button isLoading={isPending} type="submit">
               {isNewCity ? t("buttons.create") : t("buttons.update")}
             </Button>

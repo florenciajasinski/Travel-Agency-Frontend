@@ -12,8 +12,8 @@ import {
   useSearchText,
 } from "@/hooks";
 import { useTranslation } from "@/i18n";
+import { useAllAirlinesQuery } from "@/services/airlines/actions";
 import { useCitiesListQuery } from "@/services/cities/actions";
-import { CITY_FILTER_KEYS } from "@/services/cities/constants";
 import { UpsertCityDialog } from "./-components/upsert-city-dialog";
 import { useCitiesTable } from "./-hooks/use-cities-table";
 
@@ -37,10 +37,18 @@ const CityPage = () => {
     isSuccess,
   } = useCitiesListQuery({
     filter: {
-      [CITY_FILTER_KEYS.AIRLINE]: debouncedSearchText,
+      cityId: debouncedSearchText,
     },
     page,
   });
+
+  const {
+    data: airlinesData,
+    error: airlinesError,
+    isLoading: isLoadingAirlines,
+  } = useAllAirlinesQuery();
+
+  const airlines = Array.isArray(airlinesData) ? airlinesData : [];
 
   const lastPage = citiesListData?.meta?.lastPage;
   const pageSize = citiesListData?.meta?.perPage ?? DEFAULT_PAGE_SIZE;
@@ -71,35 +79,45 @@ const CityPage = () => {
     meta: { totalItems },
   });
 
+  const handleApplyFilter = () => {
+    changePage({ pageIndex: 0 });
+  };
+
+  const handleClearFilter = () => {
+    setAirlineFilter("");
+    changePage({ pageIndex: 0 });
+  };
+
   return (
     <>
       <div className="flex flex-col gap-y-2">
-        <h1>{t("cities.title")}</h1>
-
         <DataTable
           actions={
             <div className="flex gap-2">
               <select
-                className="rounded border px-3 py-2 text-sm"
+                className="rounded border px-3 py-2 text-sm disabled:opacity-50"
+                disabled={isLoadingAirlines}
                 onChange={(e) => {
                   setAirlineFilter(e.target.value);
                 }}
                 value={airlineFilter}
               >
-                <option value="">{t("airlines.all")}</option>
-                {/*{citiesListData?.included?.airlines?.map((a) => (
-                  //<option key={a.id} value={a.id}>
-                    {a.name}
-                  //</option>
-                ))}*/}
+                <option value="">
+                  {isLoadingAirlines ? t("common.loading") : t("airlines.all")}
+                </option>
+                {airlines.map((airline) => {
+                  return (
+                    <option key={airline.id} value={airline.id.toString()}>
+                      {airline.name}
+                    </option>
+                  );
+                })}
               </select>
-              <Button
-                onClick={() => {
-                  changePage({ pageIndex: 0 });
-                }}
-              >
+
+              <Button disabled={isLoadingAirlines} onClick={handleApplyFilter}>
                 {t("common.filter")}
               </Button>
+
               <Button
                 onClick={() => {
                   setIsCreateDialogOpen(true);

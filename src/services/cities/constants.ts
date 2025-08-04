@@ -1,3 +1,3 @@
 export const CITY_FILTER_KEYS = {
-  AIRLINE: "airlineId",
+  CITIES: "cityId",
 } as const;

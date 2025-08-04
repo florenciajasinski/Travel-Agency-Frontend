@@ -4,7 +4,8 @@
     "no": "No",
     "close": "Close",
     "filter": "Filter",
-    "requestError": "Unable to complete the request. Please try again later."
+    "requestError": "Unable to complete the request. Please try again later.",
+    "clear": "Clear"
   },
   "cities": {
   "title": "Cities",

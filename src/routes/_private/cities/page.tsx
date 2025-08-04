@@ -13,13 +13,14 @@ import {
 } from "@/hooks";
 import { useTranslation } from "@/i18n";
 import { useAllAirlinesQuery } from "@/services/airlines/actions";
-import { useCitiesListQuery } from "@/services/cities/actions";
+import { useAirlineCitiesQuery, useCitiesListQuery } from "@/services/cities/actions";
 import { UpsertCityDialog } from "./-components/upsert-city-dialog";
 import { useCitiesTable } from "./-hooks/use-cities-table";
 
 const CityPage = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [airlineFilter, setAirlineFilter] = useState("");
+  const [appliedAirlineFilter, setAppliedAirlineFilter] = useState("");
 
   const {
     actions: { changePage },
@@ -30,17 +31,40 @@ const CityPage = () => {
   const { searchText } = useSearchText(Route.id);
   const debouncedSearchText = useDebounce(searchText, 500);
   const { t } = useTranslation();
+  const {
+    data: allCitiesData,
+    error: errorAllCities,
+    isLoading: isLoadingAllCities,
+    isSuccess: isSuccessAllCities,
+  } = useCitiesListQuery(
+    {
+      filter: {
+        cityId: debouncedSearchText,
+      },
+      page,
+    },
+    {
+      enabled: !appliedAirlineFilter,
+    },
+  );
 
   const {
-    data: citiesListData,
-    isLoading,
-    isSuccess,
-  } = useCitiesListQuery({
-    filter: {
-      cityId: debouncedSearchText,
+    data: airlineCitiesData,
+    error: errorAirlineCities,
+    isLoading: isLoadingAirlineCities,
+    isSuccess: isSuccessAirlineCities,
+  } = useAirlineCitiesQuery(
+    {
+      airlineId: appliedAirlineFilter,
+      filter: {
+        cityId: debouncedSearchText,
+      },
+      page,
     },
-    page,
-  });
+    {
+      enabled: !!appliedAirlineFilter,
+    },
+  );
 
   const {
     data: airlinesData,
@@ -49,6 +73,10 @@ const CityPage = () => {
   } = useAllAirlinesQuery();
 
   const airlines = Array.isArray(airlinesData) ? airlinesData : [];
+
+  const citiesListData = appliedAirlineFilter ? airlineCitiesData : allCitiesData;
+  const isLoading = appliedAirlineFilter ? isLoadingAirlineCities : isLoadingAllCities;
+  const isSuccess = appliedAirlineFilter ? isSuccessAirlineCities : isSuccessAllCities;
 
   const lastPage = citiesListData?.meta?.lastPage;
   const pageSize = citiesListData?.meta?.perPage ?? DEFAULT_PAGE_SIZE;
@@ -80,11 +108,13 @@ const CityPage = () => {
   });
 
   const handleApplyFilter = () => {
+    setAppliedAirlineFilter(airlineFilter);
     changePage({ pageIndex: 0 });
   };
 
   const handleClearFilter = () => {
     setAirlineFilter("");
+    setAppliedAirlineFilter("");
     changePage({ pageIndex: 0 });
   };
 
@@ -117,6 +147,12 @@ const CityPage = () => {
               <Button disabled={isLoadingAirlines} onClick={handleApplyFilter}>
                 {t("common.filter")}
               </Button>
+
+              {appliedAirlineFilter ? (
+                <Button onClick={handleClearFilter} variant="outline">
+                  {t("common.clear")}
+                </Button>
+              ) : null}
 
               <Button
                 onClick={() => {

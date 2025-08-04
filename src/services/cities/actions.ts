@@ -49,3 +49,14 @@ export const useUpdateCityMutation = (props?: UseMutationProps<typeof mutations.
     },
   });
 };
+
+export const useAirlineCitiesQuery = (
+  params: {
+    airlineId: string;
+    filter?: Record<string, string | undefined>;
+    page?: number;
+  },
+  props?: UseQueryProps<typeof queries.airlineCities>,
+) => {
+  return useQuery({ ...queries.airlineCities(params), ...props });
+};

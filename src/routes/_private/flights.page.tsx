@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 const RouteComponent = () => {
-  const routeMessage = `Hello &quot;/_private/flights/&quot;!`;
+  const routeMessage = `Working on flights page...`;
 
   return <div dangerouslySetInnerHTML={{ __html: routeMessage }} />;
 };

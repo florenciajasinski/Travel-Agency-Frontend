@@ -12,7 +12,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PrivateLayoutRouteImport } from './routes/_private/layout'
-import { Route as PrivatePageRouteImport } from './routes/_private/page'
+import { Route as PageRouteImport } from './routes/page'
 import { Route as publicGuestLayoutRouteImport } from './routes/(public)/_guest/layout'
 import { Route as PrivateUsersPageRouteImport } from './routes/_private/users/page'
 import { Route as PrivateFlightsPageRouteImport } from './routes/_private/flights.page'
@@ -33,10 +33,10 @@ const PrivateLayoutRoute = PrivateLayoutRouteImport.update({
   id: '/_private',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PrivatePageRoute = PrivatePageRouteImport.update({
+const PageRoute = PageRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => PrivateLayoutRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const publicGuestLayoutRoute = publicGuestLayoutRouteImport.update({
   id: '/_guest',
@@ -84,7 +84,7 @@ const publicGuestLoginPageRoute = publicGuestLoginPageRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof PrivatePageRoute
+  '/': typeof publicGuestLayoutRouteWithChildren
   '/terms': typeof publicTermsPageRoute
   '/airlines': typeof PrivateAirlinesPageRoute
   '/cities': typeof PrivateCitiesPageRoute
@@ -95,7 +95,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof publicGuestRegisterPageRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof PrivatePageRoute
+  '/': typeof publicGuestLayoutRouteWithChildren
   '/terms': typeof publicTermsPageRoute
   '/airlines': typeof PrivateAirlinesPageRoute
   '/cities': typeof PrivateCitiesPageRoute
@@ -107,10 +107,10 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof PageRoute
   '/_private': typeof PrivateLayoutRouteWithChildren
   '/(public)': typeof publicRouteWithChildren
   '/(public)/_guest': typeof publicGuestLayoutRouteWithChildren
-  '/_private/': typeof PrivatePageRoute
   '/(public)/terms/': typeof publicTermsPageRoute
   '/_private/airlines/': typeof PrivateAirlinesPageRoute
   '/_private/cities/': typeof PrivateCitiesPageRoute
@@ -145,10 +145,10 @@ export interface FileRouteTypes {
     | '/register'
   id:
     | '__root__'
+    | '/'
     | '/_private'
     | '/(public)'
     | '/(public)/_guest'
-    | '/_private/'
     | '/(public)/terms/'
     | '/_private/airlines/'
     | '/_private/cities/'
@@ -160,6 +160,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  PageRoute: typeof PageRoute
   PrivateLayoutRoute: typeof PrivateLayoutRouteWithChildren
   publicRoute: typeof publicRouteWithChildren
 }
@@ -180,12 +181,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_private/': {
-      id: '/_private/'
+    '/': {
+      id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof PrivatePageRouteImport
-      parentRoute: typeof PrivateLayoutRoute
+      preLoaderRoute: typeof PageRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/(public)/_guest': {
       id: '/(public)/_guest'
@@ -254,7 +255,6 @@ declare module '@tanstack/react-router' {
 }
 
 interface PrivateLayoutRouteChildren {
-  PrivatePageRoute: typeof PrivatePageRoute
   PrivateAirlinesPageRoute: typeof PrivateAirlinesPageRoute
   PrivateCitiesPageRoute: typeof PrivateCitiesPageRoute
   PrivateDashboardPageRoute: typeof PrivateDashboardPageRoute
@@ -263,7 +263,6 @@ interface PrivateLayoutRouteChildren {
 }
 
 const PrivateLayoutRouteChildren: PrivateLayoutRouteChildren = {
-  PrivatePageRoute: PrivatePageRoute,
   PrivateAirlinesPageRoute: PrivateAirlinesPageRoute,
   PrivateCitiesPageRoute: PrivateCitiesPageRoute,
   PrivateDashboardPageRoute: PrivateDashboardPageRoute,
@@ -302,6 +301,7 @@ const publicRouteWithChildren =
   publicRoute._addFileChildren(publicRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  PageRoute: PageRoute,
   PrivateLayoutRoute: PrivateLayoutRouteWithChildren,
   publicRoute: publicRouteWithChildren,
 }

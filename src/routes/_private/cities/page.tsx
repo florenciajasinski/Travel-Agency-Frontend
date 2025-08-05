@@ -122,7 +122,6 @@ const CityPage = () => {
             </div>
           }
           isLoading={isLoading}
-          path={Route.id}
           table={table}
         />
       </div>

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import i18n from "@/i18n";
+import { airlineSchema } from "../airlines/schemas";
 
 export const citySchema = z.object({
   id: z.number(),
@@ -8,6 +9,7 @@ export const citySchema = z.object({
   incomingFlights: z.number().int().nonnegative(),
   outgoingFlights: z.number().int().nonnegative(),
   airlineIds: z.array(z.coerce.number()).optional(),
+  airlines: z.array(airlineSchema).optional(),
 });
 
 export const getCitySchema = () => {

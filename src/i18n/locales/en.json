@@ -7,6 +7,9 @@
     "requestError": "Unable to complete the request. Please try again later.",
     "clear": "Clear"
   },
+  "dashboard": {
+    "welcome": "Welcome to the Flight Manager"
+  },
   "cities": {
   "title": "Cities",
   "create": {
@@ -39,7 +42,8 @@
     }
 },
 "airlines": {
-  "all": "All Airlines"
+  "all": "All Airlines",
+  "title": "Airlines"
 },
   "greetings": {
     "rootLayout": "Root layout! I render on all paths (in English)",
@@ -134,6 +138,21 @@
       "airlines": "Airlines",
       "flights": "Flights",
       "users": "Users"
+    }
+  },
+  "flights": {
+    "title": "Flights",
+    "create": {
+      "description": "Complete the form to create a new flight",
+      "title": "Add Flight",
+      "success": "Flight created successfully",
+      "error": "Not able to create flight"
+    },
+    "update": {
+      "description": "Complete the form to update the flight",
+      "title": "Update Flight",
+      "success": "Flight updated successfully",
+      "error": "Not able to update flight"
     }
   }
 }

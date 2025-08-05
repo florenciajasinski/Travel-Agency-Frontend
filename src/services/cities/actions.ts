@@ -10,7 +10,6 @@ export const useCitiesListQuery = (
 ) => {
   return useQuery({ ...queries.list(params), ...props });
 };
-
 export const useCitiesDeleteMutation = (props?: UseMutationProps<typeof mutations.delete>) => {
   const queryClient = useQueryClient();
 
@@ -45,6 +44,7 @@ export const useUpdateCityMutation = (props?: UseMutationProps<typeof mutations.
     ...props,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: queries.list._def });
+      queryClient.invalidateQueries({ queryKey: ["cities"] });
       props?.onSuccess?.(...args);
     },
   });
@@ -59,4 +59,18 @@ export const useAirlineCitiesQuery = (
   props?: UseQueryProps<typeof queries.airlineCities>,
 ) => {
   return useQuery({ ...queries.airlineCities(params), ...props });
+};
+
+export const useCityAirlinesQuery = (
+  params: {
+    cityId: string;
+    filter?: Record<string, string | undefined>;
+    page?: number;
+  },
+  props?: UseQueryProps<typeof queries.cityAirlines>,
+) => {
+  return useQuery({
+    ...queries.cityAirlines(params),
+    ...props,
+  });
 };

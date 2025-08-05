@@ -149,9 +149,7 @@ const CityPage = () => {
               </Button>
 
               {appliedAirlineFilter ? (
-                <Button onClick={handleClearFilter} variant="outline">
-                  {t("common.clear")}
-                </Button>
+                <Button onClick={handleClearFilter}>{t("common.clear")}</Button>
               ) : null}
 
               <Button

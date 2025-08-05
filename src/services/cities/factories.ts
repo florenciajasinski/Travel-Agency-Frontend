@@ -1,6 +1,13 @@
 import { createQueryKeys } from "@lukemorales/query-key-factory";
 
-import { createCity, deleteCity, getAirlineCities, getCitiesList, updateCity } from "./api";
+import {
+  createCity,
+  deleteCity,
+  getAirlineCities,
+  getCitiesList,
+  getCityAirlines,
+  updateCity,
+} from "./api";
 
 export const queries = createQueryKeys("cities", {
   list: (params) => {
@@ -19,6 +26,19 @@ export const queries = createQueryKeys("cities", {
       },
     };
   },
+  cityAirlines: (params: {
+    cityId: string;
+    filter?: Record<string, string | undefined>;
+    page?: number;
+  }) => {
+    return {
+      queryKey: ["city", params.cityId, params],
+      queryFn: () => {
+        return getCityAirlines(params);
+      },
+    };
+  },
+
   airlineCities: (params: {
     airlineId: string;
     filter?: Record<string, string | undefined>;

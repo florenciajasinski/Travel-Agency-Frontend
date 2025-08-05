@@ -20,7 +20,11 @@
       "id": "ID",
       "name": "Name",
       "incomingFlights": "Incoming Flights",
-      "outgoingFlights": "Outgoing Flights"
+      "outgoingFlights": "Outgoing Flights",
+      "areYouAbsolutelySure": "Are you absolutely sure?",
+      "thisActionCantBeUndone": "This action cannot be undone. Are you sure you want to permanently delete { name }?",
+      "deletionSuccess": "{ name } was deleted successfully!",
+      "deletionError": "There was an error deleting { name }."
     }
   },
   "validation": {

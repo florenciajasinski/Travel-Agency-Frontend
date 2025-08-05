@@ -17,10 +17,10 @@ export const DeleteCityDialog = ({ city, isOpen, onOpenChange }: DeleteCityDialo
   const handleDelete = async () => {
     deleteCity(city.id, {
       onSuccess: () => {
-        toast.success(t("cities.table.columns.actions.deletionSuccess", { name: city.name }));
+        toast.success(t("cities.table.columns.deletionSuccess", { name: city.name }));
       },
       onError: () => {
-        toast.error(t("cities.table.columns.actions.deletionError", { name: city.name }));
+        toast.error(t("cities.table.columns.deletionError", { name: city.name }));
       },
       onSettled: () => {
         onOpenChange(false);
@@ -32,10 +32,10 @@ export const DeleteCityDialog = ({ city, isOpen, onOpenChange }: DeleteCityDialo
     <Dialog.Root onOpenChange={onOpenChange} open={isOpen}>
       <Dialog.Content isDismissible={!isPending}>
         <Dialog.Header>
-          <Dialog.Title>{t("users.table.columns.actions.areYouAbsolutelySure")}</Dialog.Title>
+          <Dialog.Title>{t("cities.table.columns.areYouAbsolutelySure")}</Dialog.Title>
 
           <Dialog.Description>
-            {t("cities.table.columns.actions.thisActionCantBeUndone", { name: city.name })}
+            {t("cities.table.columns.thisActionCantBeUndone", { name: city.name })}
           </Dialog.Description>
         </Dialog.Header>
 

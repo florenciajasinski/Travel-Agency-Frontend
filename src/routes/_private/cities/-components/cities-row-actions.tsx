@@ -14,7 +14,7 @@ type CityRowActionsProps = {
 export const CityRowActions = ({ row }: CityRowActionsProps) => {
   const { t } = useTranslation();
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
-  const [showUpdateDialog, setShowUpdateDialog] = useState(false);
+  const [showUpsertDialog, setShowUpsertDialog] = useState(false);
 
   return (
     <>
@@ -38,7 +38,7 @@ export const CityRowActions = ({ row }: CityRowActionsProps) => {
 
           <DropdownMenu.Item
             onClick={() => {
-              return setShowUpdateDialog(true);
+              return setShowUpsertDialog(true);
             }}
           >
             {t("buttons.update")}
@@ -48,8 +48,8 @@ export const CityRowActions = ({ row }: CityRowActionsProps) => {
 
       <UpsertCityDialog
         city={row.original}
-        isOpen={showUpdateDialog}
-        onOpenChange={setShowUpdateDialog}
+        isOpen={showUpsertDialog}
+        onOpenChange={setShowUpsertDialog}
       />
 
       <DeleteCityDialog

@@ -4,13 +4,7 @@ import { z } from "zod";
 
 import { Button, DataTable } from "@/components/ui";
 import { DEFAULT_PAGE_SIZE } from "@/constants";
-import {
-  paginationValidationWithDefaults,
-  searchTextValidation,
-  useDebounce,
-  usePagination,
-  useSearchText,
-} from "@/hooks";
+import { paginationValidationWithDefaults, usePagination } from "@/hooks";
 import { useTranslation } from "@/i18n";
 import { useAllAirlinesQuery } from "@/services/airlines/actions";
 import { useAirlineCitiesQuery, useCitiesListQuery } from "@/services/cities/actions";
@@ -28,49 +22,24 @@ const CityPage = () => {
     pageIndex,
   } = usePagination(Route.id);
 
-  const { searchText } = useSearchText(Route.id);
-  const debouncedSearchText = useDebounce(searchText, 500);
   const { t } = useTranslation();
+
   const {
     data: allCitiesData,
-    error: errorAllCities,
     isLoading: isLoadingAllCities,
     isSuccess: isSuccessAllCities,
-  } = useCitiesListQuery(
-    {
-      filter: {
-        cityId: debouncedSearchText,
-      },
-      page,
-    },
-    {
-      enabled: !appliedAirlineFilter,
-    },
-  );
+  } = useCitiesListQuery({ page }, { enabled: !appliedAirlineFilter });
 
   const {
     data: airlineCitiesData,
-    error: errorAirlineCities,
     isLoading: isLoadingAirlineCities,
     isSuccess: isSuccessAirlineCities,
   } = useAirlineCitiesQuery(
-    {
-      airlineId: appliedAirlineFilter,
-      filter: {
-        cityId: debouncedSearchText,
-      },
-      page,
-    },
-    {
-      enabled: !!appliedAirlineFilter,
-    },
+    { airlineId: appliedAirlineFilter, page },
+    { enabled: !!appliedAirlineFilter },
   );
 
-  const {
-    data: airlinesData,
-    error: airlinesError,
-    isLoading: isLoadingAirlines,
-  } = useAllAirlinesQuery();
+  const { data: airlinesData, isLoading: isLoadingAirlines } = useAllAirlinesQuery();
 
   const airlines = Array.isArray(airlinesData) ? airlinesData : [];
 
@@ -112,12 +81,6 @@ const CityPage = () => {
     changePage({ pageIndex: 0 });
   };
 
-  const handleClearFilter = () => {
-    setAirlineFilter("");
-    setAppliedAirlineFilter("");
-    changePage({ pageIndex: 0 });
-  };
-
   return (
     <>
       <div className="flex flex-col gap-y-2">
@@ -144,13 +107,9 @@ const CityPage = () => {
                 })}
               </select>
 
-              <Button disabled={isLoadingAirlines} onClick={handleApplyFilter}>
+              <Button disabled={isLoadingAirlines} onClick={handleApplyFilter} variant="elevated">
                 {t("common.filter")}
               </Button>
-
-              {appliedAirlineFilter ? (
-                <Button onClick={handleClearFilter}>{t("common.clear")}</Button>
-              ) : null}
 
               <Button
                 onClick={() => {
@@ -165,7 +124,6 @@ const CityPage = () => {
           isLoading={isLoading}
           path={Route.id}
           table={table}
-          withSearch={false}
         />
       </div>
 
@@ -177,7 +135,6 @@ const CityPage = () => {
 export const Route = createFileRoute("/_private/cities/")({
   component: CityPage,
   validateSearch: z.object({
-    ...searchTextValidation.shape,
     ...paginationValidationWithDefaults.shape,
   }),
 });

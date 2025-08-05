@@ -7,9 +7,9 @@ import { airlineSchema } from "../airlines/schemas";
 import { citySchema } from "./schemas";
 import type { City, CityRequestParams, CreateCity, UpdateCity } from "./types";
 
-export const getCitiesList = async ({ filter, page }: CityRequestParams) => {
+export const getCitiesList = async ({ page }: CityRequestParams) => {
   const response = await publicApi.get("cities", {
-    params: { page, filter },
+    params: { page },
   });
 
   return parsePaginatedResponse(z.array(citySchema), response.data);
@@ -17,15 +17,13 @@ export const getCitiesList = async ({ filter, page }: CityRequestParams) => {
 
 export const getAirlineCities = async ({
   airlineId,
-  filter,
   page,
 }: {
   airlineId: string;
-  filter?: Record<string, string | undefined>;
   page?: number;
 }) => {
   const response = await publicApi.get(`airlines/${airlineId}/cities`, {
-    params: { page, filter },
+    params: { page },
   });
   if (response.data && response.data.data && Array.isArray(response.data.data)) {
     const cities = z.array(citySchema).parse(response.data.data);
@@ -79,23 +77,9 @@ export const updateCity = async (data: UpdateCity) => {
   return response;
 };
 
-export const getCityById = async (id: string) => {
-  const response = await publicApi.get(`cities/${id}`);
-
-  return citySchema.parse(response.data);
-};
-
-export const getCityAirlines = async ({
-  cityId,
-  filter,
-  page,
-}: {
-  cityId: string;
-  filter?: Record<string, string | undefined>;
-  page?: number;
-}) => {
+export const getCityAirlines = async ({ cityId, page }: { cityId: string; page?: number }) => {
   const response = await publicApi.get(`cities/${cityId}/airlines`, {
-    params: { page, filter },
+    params: { page },
   });
 
   if (response.data && response.data.data && Array.isArray(response.data.data)) {

@@ -53,7 +53,6 @@ export const useUpdateCityMutation = (props?: UseMutationProps<typeof mutations.
 export const useAirlineCitiesQuery = (
   params: {
     airlineId: string;
-    filter?: Record<string, string | undefined>;
     page?: number;
   },
   props?: UseQueryProps<typeof queries.airlineCities>,
@@ -64,7 +63,6 @@ export const useAirlineCitiesQuery = (
 export const useCityAirlinesQuery = (
   params: {
     cityId: string;
-    filter?: Record<string, string | undefined>;
     page?: number;
   },
   props?: UseQueryProps<typeof queries.cityAirlines>,

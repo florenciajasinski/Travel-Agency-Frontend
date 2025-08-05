@@ -18,14 +18,6 @@ export const queries = createQueryKeys("cities", {
       },
     };
   },
-  detail: (id: string) => {
-    return {
-      queryKey: [id],
-      queryFn: () => {
-        throw new Error("not implemented");
-      },
-    };
-  },
   cityAirlines: (params: {
     cityId: string;
     filter?: Record<string, string | undefined>;

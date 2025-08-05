@@ -21,6 +21,11 @@ type UpsertCityDialogProps = {
   city?: City;
 };
 
+type UpsertCityFormData = {
+  name: string;
+  airline_ids?: number[];
+};
+
 export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialogProps) => {
   const { t } = useTranslation();
   const hasResetRef = useRef(false);
@@ -29,13 +34,14 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
   const airlines = Array.isArray(airlinesData) ? airlinesData : [];
 
   const currentCity = city;
+  const isNewCity = !currentCity;
 
   const cityId = currentCity?.id?.toString() ?? "";
   const { data: cityAirlines = [], isLoading: isLoadingCityAirlines } = useCityAirlinesQuery(
     { cityId },
     { enabled: !!currentCity },
   );
-  console.log("🟠 useCityAirlinesQuery enabled:", !!city);
+
   const cityAirlineIds = Array.isArray(cityAirlines)
     ? cityAirlines.map((a: { id: number }) => {
         return a.id.toString();
@@ -44,16 +50,8 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
         return a.id.toString();
       });
 
-  console.log("\uD83D\uDD0D Airlines data:", airlinesData);
-  console.log("\uD83D\uDD0D Airlines array:", airlines);
-  console.log("\uD83D\uDD0D City prop:", city);
-  console.log("\uD83D\uDD0D Current city:", currentCity);
-  console.log("\uD83D\uDD0D City airline IDs (from API):", cityAirlineIds);
-
   const { isPending: isCreating, mutate: createCity } = useCreateCityMutation();
   const { isPending: isUpdating, mutate: updateCity } = useUpdateCityMutation();
-
-  const isNewCity = !currentCity;
   const isPending = isUpdating || isCreating;
 
   const {
@@ -64,32 +62,24 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
     setError,
     setValue,
     watch,
-  } = useForm<CreateCity | UpdateCity>({
+  } = useForm<UpsertCityFormData>({
     mode: "onTouched",
     resolver: zodResolver(getCitySchema()),
     defaultValues: {
       name: currentCity?.name ?? "",
-      airlineIds: cityAirlineIds.map((id) => {
+      airline_ids: cityAirlineIds.map((id) => {
         return Number(id);
       }),
     },
   });
 
   const watchedValues = watch();
-  console.log("\uD83D\uDD0D Form values:", watchedValues);
 
   useEffect(() => {
     if (isOpen && currentCity && !hasResetRef.current) {
-      const airlineIds = (
-        Array.isArray(cityAirlines) ? cityAirlines : (cityAirlines.data ?? [])
-      ).map((a: { id: number }) => {
-        return a.id.toString();
-      });
-      console.log("🔍 Setting form values - airlineIds (from query):", airlineIds);
-
       reset({
         name: currentCity?.name ?? "",
-        airlineIds: airlineIds.map((id) => {
+        airline_ids: cityAirlineIds.map((id) => {
           return Number(id);
         }),
       });
@@ -102,32 +92,32 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
     }
   }, [isOpen, currentCity, cityAirlines, reset]);
 
-  const onSubmit: SubmitHandler<CreateCity | UpdateCity> = (data) => {
-    console.log("\uD83D\uDD0D Form submit data:", data);
-
+  const onSubmit: SubmitHandler<UpsertCityFormData> = (data) => {
     const payload = {
       ...data,
-      airlineIds: data.airlineIds ?? [],
+      airline_ids: (data.airline_ids ?? []).map((id) => {
+        return Number(id);
+      }),
     };
 
-    console.log("\uD83D\uDD0D Submit payload:", payload);
-
     if (isNewCity) {
-      return createCity(payload as CreateCity, {
-        onSuccess: () => {
-          toast.success(t("cities.create.success"));
-          onOpenChange(false);
-          reset();
+      return createCity(
+        { name: payload.name },
+        {
+          onSuccess: () => {
+            toast.success(t("cities.create.success"));
+            onOpenChange(false);
+            reset();
+          },
+          onError: (error) => {
+            handleAxiosFieldErrors<CreateCity>(error, setError, t("cities.create.error"));
+          },
         },
-        onError: (error) => {
-          console.error("\uD83D\uDD0D Create city error:", error);
-          handleAxiosFieldErrors<CreateCity>(error, setError, t("cities.create.error"));
-        },
-      });
+      );
     }
 
     return updateCity(
-      { ...(payload as UpdateCity), id: currentCity.id },
+      { name: payload.name, airline_ids: payload.airline_ids, id: currentCity.id },
       {
         onSuccess: () => {
           toast.success(t("cities.update.success"));
@@ -135,7 +125,6 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
           reset();
         },
         onError: (error) => {
-          console.error("\uD83D\uDD0D Update city error:", error);
           handleAxiosFieldErrors<UpdateCity>(error, setError, t("cities.update.error"));
         },
       },
@@ -164,7 +153,7 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-2">
             <Label htmlFor="name">{t("form.name")}</Label>
-            <Input {...register("name" as const)} id="name" size="sm" />
+            <Input {...register("name")} id="name" size="sm" />
             <ErrorMessage errorMessage={errors?.name?.message} />
           </div>
 
@@ -176,17 +165,14 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
             ) : (
               <div className="flex max-h-40 flex-col gap-1 overflow-y-auto rounded border p-2">
                 {airlines.map((airline) => {
-                  const isChecked = watchedValues.airlineIds?.includes(airline.id);
-                  console.log(
-                    `\uD83D\uDD0D Airline ${airline.name} (${airline.id}) - Checked: ${isChecked}`,
-                  );
+                  const isChecked = watchedValues.airline_ids?.includes(airline.id);
 
                   return (
                     <label className="flex items-center gap-2" key={airline.id}>
                       <input
                         type="checkbox"
                         value={airline.id.toString()}
-                        {...register("airlineIds" as const)}
+                        {...register("airline_ids")}
                         defaultChecked={isChecked}
                       />
                       {airline.name}
@@ -195,7 +181,7 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
                 })}
               </div>
             )}
-            <ErrorMessage errorMessage={errors?.airlineIds?.message} />
+            <ErrorMessage errorMessage={errors?.airline_ids?.message} />
           </div>
 
           <Dialog.Footer>

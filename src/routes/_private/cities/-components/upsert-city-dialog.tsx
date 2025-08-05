@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -60,16 +59,13 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
     register,
     reset,
     setError,
-    setValue,
     watch,
   } = useForm<UpsertCityFormData>({
     mode: "onTouched",
     resolver: zodResolver(getCitySchema()),
     defaultValues: {
       name: currentCity?.name ?? "",
-      airline_ids: cityAirlineIds.map((id) => {
-        return Number(id);
-      }),
+      airline_ids: isNewCity ? undefined : cityAirlineIds.map(Number),
     },
   });
 
@@ -79,11 +75,8 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
     if (isOpen && currentCity && !hasResetRef.current) {
       reset({
         name: currentCity?.name ?? "",
-        airline_ids: cityAirlineIds.map((id) => {
-          return Number(id);
-        }),
+        airline_ids: isNewCity ? undefined : cityAirlineIds.map(Number),
       });
-
       hasResetRef.current = true;
     }
 
@@ -94,10 +87,8 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
 
   const onSubmit: SubmitHandler<UpsertCityFormData> = (data) => {
     const payload = {
-      ...data,
-      airline_ids: (data.airline_ids ?? []).map((id) => {
-        return Number(id);
-      }),
+      name: data.name,
+      ...(isNewCity ? {} : { airline_ids: data.airline_ids?.map(Number) ?? [] }),
     };
 
     if (isNewCity) {
@@ -117,7 +108,7 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
     }
 
     return updateCity(
-      { name: payload.name, airline_ids: payload.airline_ids, id: currentCity.id },
+      { ...payload, id: currentCity.id },
       {
         onSuccess: () => {
           toast.success(t("cities.update.success"));
@@ -157,32 +148,34 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
             <ErrorMessage errorMessage={errors?.name?.message} />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <Label>{t("form.airlines")}</Label>
+          {!isNewCity && (
+            <div className="flex flex-col gap-2">
+              <Label>{t("form.airlines")}</Label>
 
-            {isLoadingAirlines || isLoadingCityAirlines ? (
-              <p className="text-muted-foreground text-sm">{t("common.loading")}</p>
-            ) : (
-              <div className="flex max-h-40 flex-col gap-1 overflow-y-auto rounded border p-2">
-                {airlines.map((airline) => {
-                  const isChecked = watchedValues.airline_ids?.includes(airline.id);
+              {isLoadingAirlines || isLoadingCityAirlines ? (
+                <p className="text-muted-foreground text-sm">{t("common.loading")}</p>
+              ) : (
+                <div className="flex max-h-40 flex-col gap-1 overflow-y-auto rounded border p-2">
+                  {airlines.map((airline) => {
+                    const isChecked = watchedValues.airline_ids?.includes(airline.id);
 
-                  return (
-                    <label className="flex items-center gap-2" key={airline.id}>
-                      <input
-                        type="checkbox"
-                        value={airline.id.toString()}
-                        {...register("airline_ids")}
-                        defaultChecked={isChecked}
-                      />
-                      {airline.name}
-                    </label>
-                  );
-                })}
-              </div>
-            )}
-            <ErrorMessage errorMessage={errors?.airline_ids?.message} />
-          </div>
+                    return (
+                      <label className="flex items-center gap-2" key={airline.id}>
+                        <input
+                          type="checkbox"
+                          value={airline.id.toString()}
+                          {...register("airline_ids")}
+                          defaultChecked={isChecked}
+                        />
+                        {airline.name}
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+              <ErrorMessage errorMessage={errors?.airline_ids?.message} />
+            </div>
+          )}
 
           <Dialog.Footer>
             <Dialog.Close disabled={isPending} asChild>

@@ -13,3 +13,8 @@ export type CityRequestParams = RequestParams<Record<CityFilterKey, string | und
 export type CreateCity = z.infer<ReturnType<typeof getCitySchema>>;
 
 export type UpdateCity = z.infer<ReturnType<typeof getCitySchema>> & Pick<City, "id">;
+
+export type UpsertCityFormData = {
+  name: string;
+  airline_ids?: number[];
+};

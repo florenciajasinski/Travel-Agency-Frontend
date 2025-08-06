@@ -15,10 +15,9 @@ import { Route as PrivateLayoutRouteImport } from './routes/_private/layout'
 import { Route as PageRouteImport } from './routes/page'
 import { Route as publicGuestLayoutRouteImport } from './routes/(public)/_guest/layout'
 import { Route as PrivateUsersPageRouteImport } from './routes/_private/users/page'
-import { Route as PrivateFlightsPageRouteImport } from './routes/_private/flights.page'
-import { Route as PrivateDashboardPageRouteImport } from './routes/_private/dashboard.page'
+import { Route as PrivateFlightsPageRouteImport } from './routes/_private/flights/page'
 import { Route as PrivateCitiesPageRouteImport } from './routes/_private/cities/page'
-import { Route as PrivateAirlinesPageRouteImport } from './routes/_private/airlines.page'
+import { Route as PrivateAirlinesPageRouteImport } from './routes/_private/airlines/page'
 import { Route as publicTermsPageRouteImport } from './routes/(public)/terms.page'
 import { Route as publicGuestRegisterPageRouteImport } from './routes/(public)/_guest/register.page'
 import { Route as publicGuestLoginPageRouteImport } from './routes/(public)/_guest/login/page'
@@ -52,11 +51,6 @@ const PrivateFlightsPageRoute = PrivateFlightsPageRouteImport.update({
   path: '/flights/',
   getParentRoute: () => PrivateLayoutRoute,
 } as any)
-const PrivateDashboardPageRoute = PrivateDashboardPageRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => PrivateLayoutRoute,
-} as any)
 const PrivateCitiesPageRoute = PrivateCitiesPageRouteImport.update({
   id: '/cities/',
   path: '/cities/',
@@ -88,7 +82,6 @@ export interface FileRoutesByFullPath {
   '/terms': typeof publicTermsPageRoute
   '/airlines': typeof PrivateAirlinesPageRoute
   '/cities': typeof PrivateCitiesPageRoute
-  '/dashboard': typeof PrivateDashboardPageRoute
   '/flights': typeof PrivateFlightsPageRoute
   '/users': typeof PrivateUsersPageRoute
   '/login': typeof publicGuestLoginPageRoute
@@ -99,7 +92,6 @@ export interface FileRoutesByTo {
   '/terms': typeof publicTermsPageRoute
   '/airlines': typeof PrivateAirlinesPageRoute
   '/cities': typeof PrivateCitiesPageRoute
-  '/dashboard': typeof PrivateDashboardPageRoute
   '/flights': typeof PrivateFlightsPageRoute
   '/users': typeof PrivateUsersPageRoute
   '/login': typeof publicGuestLoginPageRoute
@@ -114,7 +106,6 @@ export interface FileRoutesById {
   '/(public)/terms/': typeof publicTermsPageRoute
   '/_private/airlines/': typeof PrivateAirlinesPageRoute
   '/_private/cities/': typeof PrivateCitiesPageRoute
-  '/_private/dashboard/': typeof PrivateDashboardPageRoute
   '/_private/flights/': typeof PrivateFlightsPageRoute
   '/_private/users/': typeof PrivateUsersPageRoute
   '/(public)/_guest/login/': typeof publicGuestLoginPageRoute
@@ -127,7 +118,6 @@ export interface FileRouteTypes {
     | '/terms'
     | '/airlines'
     | '/cities'
-    | '/dashboard'
     | '/flights'
     | '/users'
     | '/login'
@@ -138,7 +128,6 @@ export interface FileRouteTypes {
     | '/terms'
     | '/airlines'
     | '/cities'
-    | '/dashboard'
     | '/flights'
     | '/users'
     | '/login'
@@ -152,7 +141,6 @@ export interface FileRouteTypes {
     | '/(public)/terms/'
     | '/_private/airlines/'
     | '/_private/cities/'
-    | '/_private/dashboard/'
     | '/_private/flights/'
     | '/_private/users/'
     | '/(public)/_guest/login/'
@@ -209,13 +197,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateFlightsPageRouteImport
       parentRoute: typeof PrivateLayoutRoute
     }
-    '/_private/dashboard/': {
-      id: '/_private/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof PrivateDashboardPageRouteImport
-      parentRoute: typeof PrivateLayoutRoute
-    }
     '/_private/cities/': {
       id: '/_private/cities/'
       path: '/cities'
@@ -257,7 +238,6 @@ declare module '@tanstack/react-router' {
 interface PrivateLayoutRouteChildren {
   PrivateAirlinesPageRoute: typeof PrivateAirlinesPageRoute
   PrivateCitiesPageRoute: typeof PrivateCitiesPageRoute
-  PrivateDashboardPageRoute: typeof PrivateDashboardPageRoute
   PrivateFlightsPageRoute: typeof PrivateFlightsPageRoute
   PrivateUsersPageRoute: typeof PrivateUsersPageRoute
 }
@@ -265,7 +245,6 @@ interface PrivateLayoutRouteChildren {
 const PrivateLayoutRouteChildren: PrivateLayoutRouteChildren = {
   PrivateAirlinesPageRoute: PrivateAirlinesPageRoute,
   PrivateCitiesPageRoute: PrivateCitiesPageRoute,
-  PrivateDashboardPageRoute: PrivateDashboardPageRoute,
   PrivateFlightsPageRoute: PrivateFlightsPageRoute,
   PrivateUsersPageRoute: PrivateUsersPageRoute,
 }

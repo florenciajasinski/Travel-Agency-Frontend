@@ -12,17 +12,13 @@ import {
 } from "@/services/cities/actions";
 import { getCitySchema } from "@/services/cities/schemas";
 import type { City, CreateCity, UpdateCity } from "@/services/cities/types";
+import type { UpsertCityFormData } from "@/services/cities/types";
 import { handleAxiosFieldErrors } from "@/utils";
 
 type UpsertCityDialogProps = {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   city?: City;
-};
-
-type UpsertCityFormData = {
-  name: string;
-  airline_ids?: number[];
 };
 
 export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialogProps) => {

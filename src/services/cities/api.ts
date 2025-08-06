@@ -2,7 +2,7 @@ import { deepSnakeKeys } from "string-ts";
 import { z } from "zod";
 
 import { publicApi } from "@/config/api";
-import { parsePaginatedResponse } from "@/services/schemas";
+import { formatListResponse, parsePaginatedResponse } from "@/services/schemas";
 import { airlineSchema } from "../airlines/schemas";
 import { citySchema } from "./schemas";
 import type { City, CityRequestParams, CreateCity, UpdateCity } from "./types";
@@ -13,48 +13,6 @@ export const getCitiesList = async ({ page }: CityRequestParams) => {
   });
 
   return parsePaginatedResponse(z.array(citySchema), response.data);
-};
-
-export const getAirlineCities = async ({
-  airlineId,
-  page,
-}: {
-  airlineId: string;
-  page?: number;
-}) => {
-  const response = await publicApi.get(`airlines/${airlineId}/cities`, {
-    params: { page },
-  });
-  if (response.data && response.data.data && Array.isArray(response.data.data)) {
-    const cities = z.array(citySchema).parse(response.data.data);
-
-    return {
-      data: cities,
-      meta: response.data.meta || {
-        currentPage: page || 1,
-        perPage: cities.length,
-        total: cities.length,
-        lastPage: 1,
-        from: 1,
-        to: cities.length,
-      },
-    };
-  }
-  if (Array.isArray(response.data)) {
-    const cities = z.array(citySchema).parse(response.data);
-
-    return {
-      data: cities,
-      meta: {
-        currentPage: page || 1,
-        perPage: cities.length,
-        total: cities.length,
-        lastPage: 1,
-        from: 1,
-        to: cities.length,
-      },
-    };
-  }
 };
 
 export const deleteCity = async (id: City["id"]) => {
@@ -77,39 +35,24 @@ export const updateCity = async (data: UpdateCity) => {
   return response;
 };
 
+export const getAirlineCities = async ({
+  airlineId,
+  page,
+}: {
+  airlineId: string;
+  page?: number;
+}) => {
+  const response = await publicApi.get(`airlines/${airlineId}/cities`, {
+    params: { page },
+  });
+
+  return formatListResponse(citySchema, response.data, page || 1);
+};
+
 export const getCityAirlines = async ({ cityId, page }: { cityId: string; page?: number }) => {
   const response = await publicApi.get(`cities/${cityId}/airlines`, {
     params: { page },
   });
 
-  if (response.data && response.data.data && Array.isArray(response.data.data)) {
-    const airlines = z.array(airlineSchema).parse(response.data.data);
-
-    return {
-      data: airlines,
-      meta: response.data.meta || {
-        currentPage: page || 1,
-        perPage: airlines.length,
-        total: airlines.length,
-        lastPage: 1,
-        from: 1,
-        to: airlines.length,
-      },
-    };
-  }
-  if (Array.isArray(response.data)) {
-    const airlines = z.array(airlineSchema).parse(response.data);
-
-    return {
-      data: airlines,
-      meta: {
-        currentPage: page || 1,
-        perPage: airlines.length,
-        total: airlines.length,
-        lastPage: 1,
-        from: 1,
-        to: airlines.length,
-      },
-    };
-  }
+  return formatListResponse(airlineSchema, response.data, page || 1);
 };

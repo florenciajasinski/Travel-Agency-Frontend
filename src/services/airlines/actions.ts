@@ -11,9 +11,9 @@ export const useAirlinesListQuery = (
   return useQuery({ ...queries.list(params), ...props });
 };
 
-export const useAllAirlinesQuery = (props?: UseQueryProps<typeof queries.all>) => {
+export const useAllAirlinesQuery = (props?: UseQueryProps<typeof queries.list>) => {
   return useQuery({
-    ...queries.all(),
+    ...queries.list({}),
     ...props,
   });
 };
@@ -26,7 +26,6 @@ export const useAirlinesDeleteMutation = (props?: UseMutationProps<typeof mutati
     ...props,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: queries.list._def });
-      queryClient.invalidateQueries({ queryKey: queries.all._def });
       props?.onSuccess?.(...args);
     },
   });
@@ -40,7 +39,6 @@ export const useCreateAirlineMutation = (props?: UseMutationProps<typeof mutatio
     ...props,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: queries.list._def });
-      queryClient.invalidateQueries({ queryKey: queries.all._def });
       props?.onSuccess?.(...args);
     },
   });
@@ -54,7 +52,6 @@ export const useUpdateAirlineMutation = (props?: UseMutationProps<typeof mutatio
     ...props,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: queries.list._def });
-      queryClient.invalidateQueries({ queryKey: queries.all._def });
       props?.onSuccess?.(...args);
     },
   });

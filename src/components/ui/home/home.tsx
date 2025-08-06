@@ -6,7 +6,7 @@ export const HomeCard = ({ image, label, to }: { image: string; label: string; t
       className="flex flex-col items-center justify-center gap-3 rounded-xl border bg-white p-6 shadow-sm transition hover:shadow-md"
       to={to}
     >
-      <img alt={label} className="h-14 w-14" src={image} />
+      <img alt={label} className="size-14" src={image} />
       <span className="text-lg font-semibold">{label}</span>
     </Link>
   );

@@ -1,12 +1,6 @@
 import { createQueryKeys } from "@lukemorales/query-key-factory";
 
-import {
-  createAirline,
-  deleteAirline,
-  getAirlinesList,
-  getAllAirlines,
-  updateAirline,
-} from "./api";
+import { createAirline, deleteAirline, getAirlinesList, updateAirline } from "./api";
 
 export const queries = createQueryKeys("airlines", {
   list: (params) => {
@@ -14,14 +8,6 @@ export const queries = createQueryKeys("airlines", {
       queryKey: [params],
       queryFn: () => {
         return getAirlinesList(params);
-      },
-    };
-  },
-  all: () => {
-    return {
-      queryKey: ["all"],
-      queryFn: () => {
-        return getAllAirlines();
       },
     };
   },

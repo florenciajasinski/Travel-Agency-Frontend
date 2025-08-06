@@ -56,3 +56,20 @@ export const getCityAirlines = async ({ cityId, page }: { cityId: string; page?:
 
   return formatListResponse(airlineSchema, response.data, page || 1);
 };
+export const getAllCities = async (): Promise<City[]> => {
+  const response = await publicApi.get("cities");
+
+  if (response.data && response.data.data && Array.isArray(response.data.data)) {
+    const paginatedResult = parsePaginatedResponse(z.array(citySchema), response.data);
+
+    return paginatedResult.data;
+  }
+
+  if (Array.isArray(response.data)) {
+    const citiesArray = z.array(citySchema).parse(response.data);
+
+    return citiesArray;
+  }
+
+  return [];
+};

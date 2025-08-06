@@ -49,7 +49,41 @@
 },
 "airlines": {
   "all": "All Airlines",
-  "title": "Airlines"
+  "title": "Airlines",
+  "create": {
+    "title": "Add City"
+  },
+  "table": {
+    "columns": {
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "flightsCount": "Number of Flights",
+      "actions": {
+      "areYouAbsolutelySure": "Are you absolutely sure?",
+      "thisActionCantBeUndone": "This action cannot be undone. Are you sure you want to permanently delete { name }?",
+      "deletionSuccess": "{ name } was deleted successfully!",
+      "deletionError": "There was an error deleting { name }."
+      }
+    }
+  },
+  "validation": {
+    "required": "Airline name is required.",
+    "minLength": "Airline name must be at least 3 characters long.",
+    "invalidNumber": "Please enter a valid number."
+  },
+  "create": {
+    "description": "Description",
+    "title": "Add Airline",
+    "success": "Airline created successfully",
+    "error": "Not able to create airline"
+  },
+  "update": {
+    "description": "Complete the form to update the airline",
+    "title": "Update Airline",
+    "success": "Airline updated successfully",
+    "error": "Not able to update airline"
+  }
 },
   "greetings": {
     "rootLayout": "Root layout! I render on all paths (in English)",

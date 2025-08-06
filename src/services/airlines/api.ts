@@ -6,16 +6,36 @@ import { parsePaginatedResponse } from "@/services/schemas";
 import { airlineSchema } from "./schemas";
 import type { Airline, AirlineRequestParams, CreateAirline, UpdateAirline } from "./types";
 
-export const getAirlinesList = async ({ filter, page }: AirlineRequestParams) => {
+export const getAirlinesList = async ({ page }: AirlineRequestParams) => {
   const response = await publicApi.get("airlines", {
-    params: { page, filter },
+    params: { page },
   });
 
   return parsePaginatedResponse(z.array(airlineSchema), response.data);
 };
+
+export const deleteAirline = async (id: Airline["id"]) => {
+  const response = await publicApi.delete(`airlines/${id}`);
+
+  return response;
+};
+
+export const createAirline = async (data: CreateAirline) => {
+  const payload = deepSnakeKeys(data);
+  const response = await publicApi.post("airlines", payload);
+
+  return response;
+};
+
+export const updateAirline = async (data: UpdateAirline) => {
+  const payload = deepSnakeKeys(data);
+  const response = await publicApi.put(`airlines/${data.id}`, payload);
+
+  return response;
+};
+
 export const getAllAirlines = async (): Promise<Airline[]> => {
   const response = await publicApi.get("airlines");
-
   if (response.data && response.data.data && Array.isArray(response.data.data)) {
     const paginatedResult = parsePaginatedResponse(z.array(airlineSchema), response.data);
 
@@ -29,15 +49,4 @@ export const getAllAirlines = async (): Promise<Airline[]> => {
   }
 
   return [];
-};
-export const deleteAirline = async (id: Airline["id"]) => {
-  return publicApi.delete(`airlines/${id}`);
-};
-
-export const createAirline = async (data: CreateAirline) => {
-  return publicApi.post("airlines", deepSnakeKeys(data));
-};
-
-export const updateAirline = async (data: UpdateAirline) => {
-  return publicApi.put(`airlines/${data.id}`, deepSnakeKeys(data));
 };

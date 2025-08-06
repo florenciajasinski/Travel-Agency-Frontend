@@ -6,7 +6,7 @@ export const airlineSchema = z.object({
   id: z.number(),
   name: z.string(),
   description: z.string().optional(),
-  numberOfFlights: z.number().int().nonnegative().optional(),
+  flightsCount: z.number().int().nonnegative().optional(),
 });
 
 export const getAirlineSchema = () => {
@@ -17,7 +17,7 @@ export const getAirlineSchema = () => {
     })
     .extend({
       description: z.string().optional(),
-      numberOfFlights: z
+      flightsCount: z
         .number()
         .int()
         .min(0, { message: i18n.t("validation.nonNegative") })

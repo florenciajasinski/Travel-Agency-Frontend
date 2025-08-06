@@ -10,6 +10,13 @@ export const useCitiesListQuery = (
 ) => {
   return useQuery({ ...queries.list(params), ...props });
 };
+
+export const useAllCitiesQuery = (props?: UseQueryProps<typeof queries.all>) => {
+  return useQuery({
+    ...queries.all(),
+    ...props,
+  });
+};
 export const useCitiesDeleteMutation = (props?: UseMutationProps<typeof mutations.delete>) => {
   const queryClient = useQueryClient();
 

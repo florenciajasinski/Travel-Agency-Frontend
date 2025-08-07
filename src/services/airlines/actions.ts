@@ -11,9 +11,9 @@ export const useAirlinesListQuery = (
   return useQuery({ ...queries.list(params), ...props });
 };
 
-export const useAllAirlinesQuery = (props?: UseQueryProps<typeof queries.list>) => {
+export const useAllAirlinesQuery = (props?: UseQueryProps<typeof queries.all>) => {
   return useQuery({
-    ...queries.list({}),
+    ...queries.all(),
     ...props,
   });
 };

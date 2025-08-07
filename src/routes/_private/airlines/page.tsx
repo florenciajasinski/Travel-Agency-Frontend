@@ -93,9 +93,7 @@ const AirlinePage = () => {
                 }}
                 value={cityFilter}
               >
-                <option value="">
-                  {isLoadingCities ? t("common.loading") : t("airlines.all")}
-                </option>
+                <option value="">{isLoadingCities ? t("common.loading") : t("cities.all")}</option>
                 {cities.map((city) => {
                   return (
                     <option key={city.id} value={city.id.toString()}>

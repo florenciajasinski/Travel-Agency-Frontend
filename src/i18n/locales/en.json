@@ -12,6 +12,7 @@
   },
   "cities": {
   "title": "Cities",
+  "all": "All Cities",
   "create": {
     "title": "Add City"
   },

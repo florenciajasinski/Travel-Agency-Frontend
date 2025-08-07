@@ -127,9 +127,6 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
           <Dialog.Title>
             {isNewFlight ? t("flights.create.title") : t("flights.update.title")}
           </Dialog.Title>
-          <Dialog.Description>
-            {isNewFlight ? t("flights.create.description") : t("flights.update.description")}
-          </Dialog.Description>
         </Dialog.Header>
 
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>

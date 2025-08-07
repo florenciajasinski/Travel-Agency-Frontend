@@ -224,7 +224,6 @@
     "invalidNumber": "Please enter a valid number."
   },
   "create": {
-    "description": "Description",
     "title": "Add Flight",
     "success": "Flight created successfully",
     "error": "Not able to create flight"
@@ -234,6 +233,13 @@
     "title": "Update Flight",
     "success": "Flight updated successfully",
     "error": "Not able to update flight"
-  }
+  },
+  "form": {
+    "airline": "Airline",
+    "departureCity": "Departure City",
+    "arrivalCity": "Arrival City",
+    "departureTime": "Departure Time",
+    "arrivalTime": "Arrival Time"
 }
+  }
 }

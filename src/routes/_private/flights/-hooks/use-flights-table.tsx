@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { createColumnHelper, useTable, type UseTableProps } from "@/components/ui";
 import { useTranslation } from "@/i18n";
 import type { Flight } from "@/services/flights/types";
+import { formatDateTime } from "@/services/schemas";
 import { FlightsRowActions } from "../-components/flights-row-actions";
 
 export const useFlightsTable = ({
@@ -19,26 +20,56 @@ export const useFlightsTable = ({
         meta: { stringifiedHeader: t("flights.table.columns.id") },
         header: t("flights.table.columns.id"),
       }),
-      columnHelper.accessor("airline", {
-        meta: { stringifiedHeader: t("flights.table.columns.airline") },
-        header: t("flights.table.columns.airline"),
-      }),
-      columnHelper.accessor("departureCity", {
-        meta: { stringifiedHeader: t("flights.table.columns.departureCity") },
-        header: t("flights.table.columns.departureCity"),
-      }),
-      columnHelper.accessor("arrivalCity", {
-        meta: { stringifiedHeader: t("flights.table.columns.arrivalCity") },
-        header: t("flights.table.columns.arrivalCity"),
-      }),
-      columnHelper.accessor("departureTime", {
-        meta: { stringifiedHeader: t("flights.table.columns.departureTime") },
-        header: t("flights.table.columns.departureTime"),
-      }),
-      columnHelper.accessor("arrivalTime", {
-        meta: { stringifiedHeader: t("flights.table.columns.arrivalTime") },
-        header: t("flights.table.columns.arrivalTime"),
-      }),
+      columnHelper.accessor(
+        (row) => {
+          return row.airline.name;
+        },
+        {
+          id: "airline",
+          meta: { stringifiedHeader: t("flights.table.columns.airline") },
+          header: t("flights.table.columns.airline"),
+        },
+      ),
+      columnHelper.accessor(
+        (row) => {
+          return row.departureCity.name;
+        },
+        {
+          id: "departureCity",
+          meta: { stringifiedHeader: t("flights.table.columns.departureCity") },
+          header: t("flights.table.columns.departureCity"),
+        },
+      ),
+      columnHelper.accessor(
+        (row) => {
+          return row.arrivalCity.name;
+        },
+        {
+          id: "arrivalCity",
+          meta: { stringifiedHeader: t("flights.table.columns.arrivalCity") },
+          header: t("flights.table.columns.arrivalCity"),
+        },
+      ),
+      columnHelper.accessor(
+        (row) => {
+          return formatDateTime(row.departureTime);
+        },
+        {
+          id: "departureTime",
+          meta: { stringifiedHeader: t("flights.table.columns.departureTime") },
+          header: t("flights.table.columns.departureTime"),
+        },
+      ),
+      columnHelper.accessor(
+        (row) => {
+          return formatDateTime(row.arrivalTime);
+        },
+        {
+          id: "arrivalTime",
+          meta: { stringifiedHeader: t("flights.table.columns.arrivalTime") },
+          header: t("flights.table.columns.arrivalTime"),
+        },
+      ),
 
       columnHelper.display({
         id: "actions",

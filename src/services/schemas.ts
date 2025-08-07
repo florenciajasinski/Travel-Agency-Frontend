@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 import { DEFAULT_PAGE_SIZE } from "@/constants";
 
 const paginatedResponseSchema = z.object({
@@ -53,4 +52,16 @@ export const getList = (
     pageSize: m.per_page ?? m.perPage ?? defaultPageSize,
     totalItems: m.total ?? 0,
   };
+};
+
+export const formatDateTime = (isoString: string) => {
+  const date = new Date(isoString);
+
+  return date.toLocaleString(undefined, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 };

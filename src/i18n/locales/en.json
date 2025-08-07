@@ -195,5 +195,45 @@
       "success": "Flight updated successfully",
       "error": "Not able to update flight"
     }
+  },
+  "flights": {
+    "all": "All Flights",
+    "title": "Flights",
+    "create": {
+      "title": "Add Flight"
+    },
+  "table": {
+    "columns": {
+      "id": "ID",
+      "airline": "Airline",
+      "departureCity": "Departure City",
+      "arrivalCity": "Arrival City",
+      "departureTime": "Departure Time",
+      "arrivalTime": "Arrival Time",
+      "actions": {
+      "areYouAbsolutelySure": "Are you absolutely sure?",
+      "thisActionCantBeUndone": "This action cannot be undone. Are you sure you want to permanently delete { name }?",
+      "deletionSuccess": "{ name } was deleted successfully!",
+      "deletionError": "There was an error deleting { name }."
+      }
+    }
+  },
+  "validation": {
+    "required": "Flight name is required.",
+    "minLength": "Flight name must be at least 3 characters long.",
+    "invalidNumber": "Please enter a valid number."
+  },
+  "create": {
+    "description": "Description",
+    "title": "Add Flight",
+    "success": "Flight created successfully",
+    "error": "Not able to create flight"
+  },
+  "update": {
+    "description": "Complete the form to update the flight",
+    "title": "Update Flight",
+    "success": "Flight updated successfully",
+    "error": "Not able to update flight"
   }
+}
 }

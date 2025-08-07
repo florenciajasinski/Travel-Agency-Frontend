@@ -11,6 +11,7 @@
     "welcome": "Welcome to the Flight Manager"
   },
   "cities": {
+  "select": "Select a City",
   "title": "Cities",
   "all": "All Cities",
   "create": {
@@ -51,6 +52,7 @@
 "airlines": {
   "all": "All Airlines",
   "title": "Airlines",
+  "select": "Select an Airline",
   "create": {
     "title": "Add City"
   },

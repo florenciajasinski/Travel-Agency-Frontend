@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -8,8 +8,7 @@ import { useAllAirlinesQuery } from "@/services/airlines/actions";
 import { useAirlineCitiesQuery } from "@/services/cities/actions";
 import { useCreateFlightMutation, useUpdateFlightMutation } from "@/services/flights/actions";
 import { getFlightSchema } from "@/services/flights/schemas";
-import type { Flight, UpdateFlight } from "@/services/flights/types";
-import type { UpsertFlightFormData } from "@/services/flights/types";
+import type { CreateFlight, Flight, UpdateFlight } from "@/services/flights/types";
 import { handleAxiosFieldErrors } from "@/utils";
 
 type UpsertFlightDialogProps = {
@@ -27,20 +26,21 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
 
   const { isPending: isCreating, mutate: createFlight } = useCreateFlightMutation();
   const { isPending: isUpdating, mutate: updateFlight } = useUpdateFlightMutation();
-
-  const {
-    data: airlineCitiesData,
-    isLoading: isLoadingAirlineCities,
-    isSuccess: isSuccessAirlineCities,
-  } = useAirlineCitiesQuery(
-    { airlineId: appliedAirlineFilter, page },
-    { enabled: !!appliedAirlineFilter },
-  );
   const isPending = isUpdating || isCreating;
 
   const { data: airlinesData, isLoading: isLoadingAirlines } = useAllAirlinesQuery();
-
   const airlines = Array.isArray(airlinesData) ? airlinesData : [];
+
+  const [selectedAirlineId, setSelectedAirlineId] = useState<number | undefined>(
+    currentFlight?.airline ? currentFlight.airline.id : undefined,
+  );
+
+  const { data: airlineCitiesData, isLoading: isLoadingAirlineCities } = useAirlineCitiesQuery(
+    { airlineId: selectedAirlineId?.toString() || "", page: 1 },
+    { enabled: !!selectedAirlineId },
+  );
+
+  const airlineCities = Array.isArray(airlineCitiesData?.data) ? airlineCitiesData.data : [];
 
   const {
     formState: { errors },
@@ -48,20 +48,17 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
     register,
     reset,
     setError,
-  } = useForm<UpsertFlightFormData>({
+    setValue,
+    watch,
+  } = useForm<CreateFlight>({
     mode: "onTouched",
     resolver: zodResolver(getFlightSchema()),
     defaultValues: {
-      airline_id:
-        currentFlight?.airline &&
-        Array.isArray(currentFlight.airline) &&
-        currentFlight.airline.length > 0
-          ? currentFlight.airline[0].id
-          : undefined,
-      departure_city_id: currentFlight?.departureCity
+      airline: selectedAirlineId,
+      departure_city: currentFlight?.departureCity
         ? Number(currentFlight.departureCity)
         : undefined,
-      arrival_city_id: currentFlight?.arrivalCity ? Number(currentFlight.arrivalCity) : undefined,
+      arrival_city: currentFlight?.arrivalCity ? Number(currentFlight.arrivalCity) : undefined,
       departure_time: currentFlight?.departureTime ?? "",
       arrival_time: currentFlight?.arrivalTime ?? "",
     },
@@ -69,20 +66,17 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
 
   useEffect(() => {
     if (isOpen && currentFlight && !hasResetRef.current) {
+      const airlineId = currentFlight.airline?.id;
       reset({
-        airline_id:
-          currentFlight.airline &&
-          Array.isArray(currentFlight.airline) &&
-          currentFlight.airline.length > 0
-            ? currentFlight.airline[0].id
-            : undefined,
-        departure_city_id: currentFlight.departureCity
+        airline: airlineId,
+        departure_city: currentFlight.departureCity
           ? Number(currentFlight.departureCity)
           : undefined,
-        arrival_city_id: currentFlight.arrivalCity ? Number(currentFlight.arrivalCity) : undefined,
+        arrival_city: currentFlight.arrivalCity ? Number(currentFlight.arrivalCity) : undefined,
         departure_time: currentFlight.departureTime ?? "",
         arrival_time: currentFlight.arrivalTime ?? "",
       });
+      setSelectedAirlineId(airlineId);
       hasResetRef.current = true;
     }
 
@@ -91,13 +85,13 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
     }
   }, [isOpen, currentFlight, reset]);
 
-  const onSubmit: SubmitHandler<UpsertFlightFormData> = (data) => {
+  const onSubmit: SubmitHandler<CreateFlight> = (data) => {
     const payload = {
-      airline: data.airline_id ? [{ id: data.airline_id }] : undefined,
-      departureCity: data.departure_city_id ? String(data.departure_city_id) : undefined,
-      arrivalCity: data.arrival_city_id ? String(data.arrival_city_id) : undefined,
-      departureTime: data.departure_time,
-      arrivalTime: data.arrival_time,
+      airline_id: data.airline,
+      departure_city_id: data.departure_city,
+      arrival_city_id: data.arrival_city,
+      departure_time: data.departure_time,
+      arrival_time: data.arrival_time,
     };
 
     if (isNewFlight) {
@@ -108,7 +102,7 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
           reset();
         },
         onError: (error) => {
-          handleAxiosFieldErrors<UpsertFlightFormData>(error, setError, t("flights.create.error"));
+          handleAxiosFieldErrors<CreateFlight>(error, setError, t("flights.create.error"));
         },
       });
     }
@@ -128,12 +122,22 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
     );
   };
 
+  const handleAirlineChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const id = Number(e.target.value);
+    setSelectedAirlineId(id);
+    setValue("airline", id);
+    setValue("departure_city");
+    setValue("arrival_city");
+  };
+
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       reset();
     }
     onOpenChange(open);
   };
+
+  const watchedValues = watch();
 
   return (
     <Dialog.Root onOpenChange={handleOpenChange} open={isOpen}>
@@ -146,51 +150,67 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
 
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-2">
+            <Label htmlFor="airline">{t("flights.form.airline")}</Label>
             <select
+              {...register("airline", { valueAsNumber: true })}
               className="rounded border px-3 py-2 text-sm disabled:opacity-50"
               disabled={isLoadingAirlines}
+              id="airline"
+              onChange={handleAirlineChange}
+              value={selectedAirlineId || ""}
             >
-              <option value="">
-                {isLoadingAirlines ? t("common.loading") : t("airlines.all")}
-              </option>
+              <option value="">{t("airlines.select")}</option>
               {airlines.map((airline) => {
                 return (
-                  <option key={airline.id} value={airline.id.toString()}>
+                  <option key={airline.id} value={airline.id}>
                     {airline.name}
                   </option>
                 );
               })}
             </select>
+            <ErrorMessage errorMessage={errors?.airline?.message} />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="departure_city_id">{t("flights.form.departure_city")}</Label>
-            <Input
-              {...register("departure_city_id")}
-              id="departure_city_id"
-              size="sm"
-              type="number"
-            />
-            <ErrorMessage errorMessage={errors?.departure_city_id?.message} />
-          </div>
+          {["departure_city", "arrival_city"].map((field) => {
+            return (
+              <div className="flex flex-col gap-2" key={field}>
+                <Label htmlFor={field}>{t(`flights.form.${field}`)}</Label>
+                <select
+                  className="rounded border px-3 py-2 text-sm disabled:opacity-50"
+                  disabled={isLoadingAirlineCities || !selectedAirlineId}
+                  id={field}
+                  {...register(field as keyof CreateFlight, { valueAsNumber: true })}
+                >
+                  <option value="">{t("cities.select")}</option>
+                  {airlineCities.map((city) => {
+                    const isSelected =
+                      field === "arrival_city" && watchedValues.departure_city === city.id;
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="arrival_city_id">{t("flights.form.arrival_city")}</Label>
-            <Input {...register("arrival_city_id")} id="arrival_city_id" size="sm" type="number" />
-            <ErrorMessage errorMessage={errors?.arrival_city_id?.message} />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="departure_time">{t("flights.form.departure_time")}</Label>
-            <Input {...register("departure_time")} id="departure_time" size="sm" type="text" />
-            <ErrorMessage errorMessage={errors?.departure_time?.message} />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="arrival_time">{t("flights.form.arrival_time")}</Label>
-            <Input {...register("arrival_time")} id="arrival_time" size="sm" type="text" />
-            <ErrorMessage errorMessage={errors?.arrival_time?.message} />
-          </div>
+                    return (
+                      <option
+                        disabled={isSelected}
+                        key={city.id}
+                        style={isSelected ? { color: "#999" } : undefined}
+                        value={city.id}
+                      >
+                        {city.name} {isSelected ? "(Already selected as departure)" : ""}
+                      </option>
+                    );
+                  })}
+                </select>
+                <ErrorMessage errorMessage={errors?.airline?.message} />
+              </div>
+            );
+          })}
+          {(["departure_time", "arrival_time"] as const).map((field) => {
+            return (
+              <div className="flex flex-col gap-2" key={field}>
+                <Label htmlFor={field}>{t(`flights.form.${field}`)}</Label>
+                <Input id={field} size="sm" type="date" {...register(field)} />
+                <ErrorMessage errorMessage={errors?.[field]?.message} />
+              </div>
+            );
+          })}
 
           <Dialog.Footer>
             <Dialog.Close disabled={isPending} asChild>

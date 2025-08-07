@@ -13,11 +13,3 @@ export type FlightRequestParams = RequestParams<Record<FlightFilterKey, string |
 export type CreateFlight = z.infer<ReturnType<typeof getFlightSchema>>;
 
 export type UpdateFlight = z.infer<ReturnType<typeof getFlightSchema>> & Pick<Flight, "id">;
-
-export type UpsertFlightFormData = {
-  airline_id: number;
-  departure_city_id: number;
-  arrival_city_id: number;
-  departure_time: string;
-  arrival_time: string;
-};

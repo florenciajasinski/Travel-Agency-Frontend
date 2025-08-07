@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button, Dialog, ErrorMessage, Input, Label, toast } from "@/components/ui";
 import { useTranslation } from "@/i18n";
+import { useAllAirlinesQuery } from "@/services/airlines/actions";
+import { useAirlineCitiesQuery } from "@/services/cities/actions";
 import { useCreateFlightMutation, useUpdateFlightMutation } from "@/services/flights/actions";
 import { getFlightSchema } from "@/services/flights/schemas";
 import type { Flight, UpdateFlight } from "@/services/flights/types";
@@ -25,7 +27,20 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
 
   const { isPending: isCreating, mutate: createFlight } = useCreateFlightMutation();
   const { isPending: isUpdating, mutate: updateFlight } = useUpdateFlightMutation();
+
+  const {
+    data: airlineCitiesData,
+    isLoading: isLoadingAirlineCities,
+    isSuccess: isSuccessAirlineCities,
+  } = useAirlineCitiesQuery(
+    { airlineId: appliedAirlineFilter, page },
+    { enabled: !!appliedAirlineFilter },
+  );
   const isPending = isUpdating || isCreating;
+
+  const { data: airlinesData, isLoading: isLoadingAirlines } = useAllAirlinesQuery();
+
+  const airlines = Array.isArray(airlinesData) ? airlinesData : [];
 
   const {
     formState: { errors },
@@ -131,9 +146,21 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
 
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="airline_id">{t("flights.form.airline")}</Label>
-            <Input {...register("airline_id")} id="airline_id" size="sm" type="number" />
-            <ErrorMessage errorMessage={errors?.airline_id?.message} />
+            <select
+              className="rounded border px-3 py-2 text-sm disabled:opacity-50"
+              disabled={isLoadingAirlines}
+            >
+              <option value="">
+                {isLoadingAirlines ? t("common.loading") : t("airlines.all")}
+              </option>
+              {airlines.map((airline) => {
+                return (
+                  <option key={airline.id} value={airline.id.toString()}>
+                    {airline.name}
+                  </option>
+                );
+              })}
+            </select>
           </div>
 
           <div className="flex flex-col gap-2">

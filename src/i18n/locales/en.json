@@ -236,10 +236,10 @@
   },
   "form": {
     "airline": "Airline",
-    "departureCity": "Departure City",
-    "arrivalCity": "Arrival City",
-    "departureTime": "Departure Time",
-    "arrivalTime": "Arrival Time"
+    "departure_city": "Departure City",
+    "arrival_city": "Arrival City",
+    "departure_time": "Departure Time",
+    "arrival_time": "Arrival Time"
 }
   }
 }

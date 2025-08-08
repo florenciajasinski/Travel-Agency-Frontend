@@ -79,7 +79,6 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
       setSelectedAirlineId(airlineId);
       hasResetRef.current = true;
     }
-
     if (!isOpen) {
       hasResetRef.current = false;
     }
@@ -124,10 +123,10 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
 
   const handleAirlineChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const id = Number(e.target.value);
-    setSelectedAirlineId(id);
-    setValue("airline", id);
-    setValue("departure_city");
-    setValue("arrival_city");
+    setSelectedAirlineId(id || undefined);
+    setValue("airline", id || (undefined as unknown as number));
+    setValue("departure_city", undefined as unknown as number);
+    setValue("arrival_city", undefined as unknown as number);
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -138,6 +137,9 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
   };
 
   const watchedValues = watch();
+
+  const cityFields = ["departure_city", "arrival_city"] as const;
+  const dateFields = ["departure_time", "arrival_time"] as const;
 
   return (
     <Dialog.Root onOpenChange={handleOpenChange} open={isOpen}>
@@ -157,7 +159,7 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
               disabled={isLoadingAirlines}
               id="airline"
               onChange={handleAirlineChange}
-              value={selectedAirlineId || ""}
+              value={selectedAirlineId ?? ""}
             >
               <option value="">{t("airlines.select")}</option>
               {airlines.map((airline) => {
@@ -168,10 +170,14 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
                 );
               })}
             </select>
-            <ErrorMessage errorMessage={errors?.airline?.message} />
+            {typeof errors.airline?.message === "string" && (
+              <span className="text-sm text-red-500">
+                {t("flights.validation.airline.required")}
+              </span>
+            )}
           </div>
 
-          {["departure_city", "arrival_city"].map((field) => {
+          {cityFields.map((field) => {
             return (
               <div className="flex flex-col gap-2" key={field}>
                 <Label htmlFor={field}>{t(`flights.form.${field}`)}</Label>
@@ -179,7 +185,7 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
                   className="rounded border px-3 py-2 text-sm disabled:opacity-50"
                   disabled={isLoadingAirlineCities || !selectedAirlineId}
                   id={field}
-                  {...register(field as keyof CreateFlight, { valueAsNumber: true })}
+                  {...register(field, { valueAsNumber: true })}
                 >
                   <option value="">{t("cities.select")}</option>
                   {airlineCities.map((city) => {
@@ -198,16 +204,21 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
                     );
                   })}
                 </select>
-                <ErrorMessage errorMessage={errors?.airline?.message} />
+                {typeof errors.departure_city?.message === "string" && (
+                  <span className="text-sm text-red-500">
+                    {t("flights.validation.city.required")}
+                  </span>
+                )}
               </div>
             );
           })}
-          {(["departure_time", "arrival_time"] as const).map((field) => {
+
+          {dateFields.map((field) => {
             return (
               <div className="flex flex-col gap-2" key={field}>
                 <Label htmlFor={field}>{t(`flights.form.${field}`)}</Label>
                 <Input id={field} size="sm" type="date" {...register(field)} />
-                <ErrorMessage errorMessage={errors?.[field]?.message} />
+                <ErrorMessage errorMessage={errors[field]?.message} />
               </div>
             );
           })}

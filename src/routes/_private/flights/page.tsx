@@ -60,10 +60,6 @@ const FlightPage = () => {
     meta: { totalItems },
   });
 
-  const handleApplyFilter = () => {
-    changePage({ pageIndex: 0 });
-  };
-
   return (
     <>
       <div className="flex flex-col gap-y-2">

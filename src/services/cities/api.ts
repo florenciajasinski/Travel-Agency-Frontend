@@ -5,7 +5,7 @@ import { publicApi } from "@/config/api";
 import { formatListResponse, parsePaginatedResponse } from "@/services/schemas";
 import { airlineSchema } from "../airlines/schemas";
 import { citySchema } from "./schemas";
-import type { City, CityRequestParams, CreateCity, UpdateCity } from "./types";
+import type { City, CityRequestParams, CreateCityPayload, UpdateCityPayload } from "./types";
 
 export const getCitiesList = async ({ page }: CityRequestParams) => {
   const response = await publicApi.get("cities", {
@@ -21,14 +21,14 @@ export const deleteCity = async (id: City["id"]) => {
   return response;
 };
 
-export const createCity = async (data: CreateCity) => {
+export const createCity = async (data: CreateCityPayload) => {
   const payload = deepSnakeKeys(data);
   const response = await publicApi.post("cities", payload);
 
   return response;
 };
 
-export const updateCity = async (data: UpdateCity) => {
+export const updateCity = async (data: UpdateCityPayload) => {
   const payload = deepSnakeKeys(data);
   const response = await publicApi.put(`cities/${data.id}`, payload);
 

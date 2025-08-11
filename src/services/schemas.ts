@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { DEFAULT_PAGE_SIZE } from "@/constants";
 
 const paginatedResponseSchema = z.object({
@@ -64,4 +65,8 @@ export const formatDateTime = (isoString: string) => {
     hour: "2-digit",
     minute: "2-digit",
   });
+};
+
+export const toDateInput = (s?: string) => {
+  return s ? new Date(s).toISOString().slice(0, 10) : "";
 };

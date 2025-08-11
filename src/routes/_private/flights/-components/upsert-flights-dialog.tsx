@@ -9,6 +9,7 @@ import { useAirlineCitiesQuery } from "@/services/cities/actions";
 import { useCreateFlightMutation, useUpdateFlightMutation } from "@/services/flights/actions";
 import { getFlightSchema } from "@/services/flights/schemas";
 import type { CreateFlight, Flight, UpdateFlight } from "@/services/flights/types";
+import { toDateInput } from "@/services/schemas";
 import { handleAxiosFieldErrors } from "@/utils";
 
 type UpsertFlightDialogProps = {
@@ -31,14 +32,87 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
   const { data: airlinesData, isLoading: isLoadingAirlines } = useAllAirlinesQuery();
   const airlines = Array.isArray(airlinesData) ? airlinesData : [];
 
-  const [selectedAirlineId, setSelectedAirlineId] = useState<number | undefined>(
-    currentFlight?.airline ? currentFlight.airline.id : undefined,
-  );
+  const initialAirlineId = currentFlight?.airline?.id ?? undefined;
+
+  const getCityId = (flight?: Flight, cityType?: "departure" | "arrival"): number | undefined => {
+    if (!flight || !cityType) {
+      return undefined;
+    }
+
+    return cityType === "departure" ? flight.departureCity?.id : flight.arrivalCity?.id;
+  };
+
+  const initialDepartureId = getCityId(currentFlight, "departure");
+  const initialArrivalId = getCityId(currentFlight, "arrival");
+
+  const [selectedAirlineId, setSelectedAirlineId] = useState<number | undefined>(initialAirlineId);
 
   const { data: airlineCitiesData, isLoading: isLoadingAirlineCities } = useAirlineCitiesQuery(
     { airlineId: selectedAirlineId?.toString() || "", page: 1 },
     { enabled: !!selectedAirlineId },
   );
+
+  const airlineCities = Array.isArray(airlineCitiesData?.data) ? airlineCitiesData.data : [];
+
+  const {
+    clearErrors,
+    formState: { errors },
+    handleSubmit,
+    register,
+    reset,
+    setError,
+    setValue,
+    watch,
+  } = useForm<CreateFlight>({
+    mode: "onTouched",
+    resolver: zodResolver(getFlightSchema()),
+    defaultValues: {
+      airline_id: initialAirlineId,
+      departure_city_id: initialDepartureId,
+      arrival_city_id: initialArrivalId,
+      departure_time: toDateInput(currentFlight?.departureTime),
+      arrival_time: toDateInput(currentFlight?.arrivalTime),
+    },
+  });
+
+  useEffect(() => {
+    if (isOpen && currentFlight && !hasResetRef.current) {
+      reset({
+        airline_id: initialAirlineId,
+        departure_city_id: initialDepartureId,
+        arrival_city_id: initialArrivalId,
+        departure_time: toDateInput(currentFlight?.departureTime),
+        arrival_time: toDateInput(currentFlight?.arrivalTime),
+      });
+      setSelectedAirlineId(initialAirlineId);
+      hasResetRef.current = true;
+    }
+    if (!isOpen) {
+      hasResetRef.current = false;
+    }
+  }, [isOpen, currentFlight, reset]);
+
+  useEffect(() => {
+    if (!isOpen || !currentFlight) {
+      return;
+    }
+    if (!isLoadingAirlineCities && airlineCities.length > 0) {
+      if (initialDepartureId) {
+        setValue("departure_city_id", initialDepartureId);
+      }
+      if (initialArrivalId) {
+        setValue("arrival_city_id", initialArrivalId);
+      }
+    }
+  }, [
+    isOpen,
+    currentFlight,
+    isLoadingAirlineCities,
+    airlineCities,
+    initialDepartureId,
+    initialArrivalId,
+    setValue,
+  ]);
 
   const handleCreate = (payload: CreateFlight) => {
     createFlight(payload, {
@@ -66,50 +140,6 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
     });
   };
 
-  const airlineCities = Array.isArray(airlineCitiesData?.data) ? airlineCitiesData.data : [];
-
-  const {
-    formState: { errors },
-    handleSubmit,
-    register,
-    reset,
-    setError,
-    setValue,
-    watch,
-  } = useForm<CreateFlight>({
-    mode: "onTouched",
-    resolver: zodResolver(getFlightSchema()),
-    defaultValues: {
-      airline_id: selectedAirlineId,
-      departure_city_id: currentFlight?.departureCity
-        ? Number(currentFlight.departureCity)
-        : undefined,
-      arrival_city_id: currentFlight?.arrivalCity ? Number(currentFlight.arrivalCity) : undefined,
-      departure_time: currentFlight?.departureTime ?? "",
-      arrival_time: currentFlight?.arrivalTime ?? "",
-    },
-  });
-
-  useEffect(() => {
-    if (isOpen && currentFlight && !hasResetRef.current) {
-      const airlineId = currentFlight.airline?.id;
-      reset({
-        airline_id: airlineId,
-        departure_city_id: currentFlight.departureCity
-          ? Number(currentFlight.departureCity)
-          : undefined,
-        arrival_city_id: currentFlight.arrivalCity ? Number(currentFlight.arrivalCity) : undefined,
-        departure_time: currentFlight.departureTime ?? "",
-        arrival_time: currentFlight.arrivalTime ?? "",
-      });
-      setSelectedAirlineId(airlineId);
-      hasResetRef.current = true;
-    }
-    if (!isOpen) {
-      hasResetRef.current = false;
-    }
-  }, [isOpen, currentFlight, reset]);
-
   const onSubmit: SubmitHandler<CreateFlight> = (data) => {
     const payload = {
       airline_id: data.airline_id,
@@ -132,7 +162,17 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
     setValue("airline_id", id || (undefined as unknown as number));
     setValue("departure_city_id", undefined as unknown as number);
     setValue("arrival_city_id", undefined as unknown as number);
+    clearErrors(["departure_city_id", "arrival_city_id"]);
   };
+
+  const watched = {
+    airline_id: watch("airline_id"),
+    departure_city_id: watch("departure_city_id"),
+    arrival_city_id: watch("arrival_city_id"),
+  };
+
+  const cityFields = ["departure_city_id", "arrival_city_id"] as const;
+  const dateFields = ["departure_time", "arrival_time"] as const;
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
@@ -140,11 +180,6 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
     }
     onOpenChange(open);
   };
-
-  const watchedValues = watch();
-
-  const cityFields = ["departure_city_id", "arrival_city_id"] as const;
-  const dateFields = ["departure_time", "arrival_time"] as const;
 
   return (
     <Dialog.Root onOpenChange={handleOpenChange} open={isOpen}>
@@ -159,10 +194,10 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
           <div className="flex flex-col gap-2">
             <Label htmlFor="airline">{t("flights.form.airline")}</Label>
             <select
-              {...register("airline_id", { valueAsNumber: true })}
               className="rounded border px-3 py-2 text-sm disabled:opacity-50"
               disabled={isLoadingAirlines}
               id="airline"
+              {...register("airline_id", { valueAsNumber: true })}
               onChange={handleAirlineChange}
               value={selectedAirlineId ?? ""}
             >
@@ -175,13 +210,8 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
                 );
               })}
             </select>
-            {typeof errors.airline_id?.message === "string" && (
-              <span className="text-sm text-red-500">
-                {t("flights.validation.airline.required")}
-              </span>
-            )}
+            <ErrorMessage errorMessage={errors.airline_id?.message} />
           </div>
-
           {cityFields.map((field) => {
             return (
               <div className="flex flex-col gap-2" key={field}>
@@ -190,34 +220,30 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
                   className="rounded border px-3 py-2 text-sm disabled:opacity-50"
                   disabled={isLoadingAirlineCities || !selectedAirlineId}
                   id={field}
+                  value={watch(field) ?? ""}
                   {...register(field, { valueAsNumber: true })}
                 >
                   <option value="">{t("cities.select")}</option>
                   {airlineCities.map((city) => {
-                    const isSelected =
-                      field === "arrival_city_id" && watchedValues.departure_city_id === city.id;
+                    const isSelectedAsDeparture =
+                      field === "arrival_city_id" && watched.departure_city_id === city.id;
 
                     return (
                       <option
-                        disabled={isSelected}
+                        disabled={isSelectedAsDeparture}
                         key={city.id}
-                        style={isSelected ? { color: "#999" } : undefined}
+                        style={isSelectedAsDeparture ? { color: "#999" } : undefined}
                         value={city.id}
                       >
-                        {city.name} {isSelected ? "(Already selected as departure)" : ""}
+                        {city.name} {isSelectedAsDeparture ? "(Already selected as departure)" : ""}
                       </option>
                     );
                   })}
                 </select>
-                {typeof errors.departure_city_id?.message === "string" && (
-                  <span className="text-sm text-red-500">
-                    {t("flights.validation.city.required")}
-                  </span>
-                )}
+                <ErrorMessage errorMessage={errors[field]?.message} />
               </div>
             );
           })}
-
           {dateFields.map((field) => {
             return (
               <div className="flex flex-col gap-2" key={field}>

@@ -80,11 +80,11 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
     mode: "onTouched",
     resolver: zodResolver(getFlightSchema()),
     defaultValues: {
-      airline: selectedAirlineId,
-      departure_city: currentFlight?.departureCity
+      airline_id: selectedAirlineId,
+      departure_city_id: currentFlight?.departureCity
         ? Number(currentFlight.departureCity)
         : undefined,
-      arrival_city: currentFlight?.arrivalCity ? Number(currentFlight.arrivalCity) : undefined,
+      arrival_city_id: currentFlight?.arrivalCity ? Number(currentFlight.arrivalCity) : undefined,
       departure_time: currentFlight?.departureTime ?? "",
       arrival_time: currentFlight?.arrivalTime ?? "",
     },
@@ -94,11 +94,11 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
     if (isOpen && currentFlight && !hasResetRef.current) {
       const airlineId = currentFlight.airline?.id;
       reset({
-        airline: airlineId,
-        departure_city: currentFlight.departureCity
+        airline_id: airlineId,
+        departure_city_id: currentFlight.departureCity
           ? Number(currentFlight.departureCity)
           : undefined,
-        arrival_city: currentFlight.arrivalCity ? Number(currentFlight.arrivalCity) : undefined,
+        arrival_city_id: currentFlight.arrivalCity ? Number(currentFlight.arrivalCity) : undefined,
         departure_time: currentFlight.departureTime ?? "",
         arrival_time: currentFlight.arrivalTime ?? "",
       });
@@ -112,9 +112,9 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
 
   const onSubmit: SubmitHandler<CreateFlight> = (data) => {
     const payload = {
-      airline_id: data.airline,
-      departure_city_id: data.departure_city,
-      arrival_city_id: data.arrival_city,
+      airline_id: data.airline_id,
+      departure_city_id: data.departure_city_id,
+      arrival_city_id: data.arrival_city_id,
       departure_time: data.departure_time,
       arrival_time: data.arrival_time,
     };
@@ -129,9 +129,9 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
   const handleAirlineChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const id = Number(e.target.value);
     setSelectedAirlineId(id || undefined);
-    setValue("airline", id || (undefined as unknown as number));
-    setValue("departure_city", undefined as unknown as number);
-    setValue("arrival_city", undefined as unknown as number);
+    setValue("airline_id", id || (undefined as unknown as number));
+    setValue("departure_city_id", undefined as unknown as number);
+    setValue("arrival_city_id", undefined as unknown as number);
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -143,7 +143,7 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
 
   const watchedValues = watch();
 
-  const cityFields = ["departure_city", "arrival_city"] as const;
+  const cityFields = ["departure_city_id", "arrival_city_id"] as const;
   const dateFields = ["departure_time", "arrival_time"] as const;
 
   return (
@@ -159,7 +159,7 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
           <div className="flex flex-col gap-2">
             <Label htmlFor="airline">{t("flights.form.airline")}</Label>
             <select
-              {...register("airline", { valueAsNumber: true })}
+              {...register("airline_id", { valueAsNumber: true })}
               className="rounded border px-3 py-2 text-sm disabled:opacity-50"
               disabled={isLoadingAirlines}
               id="airline"
@@ -175,7 +175,7 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
                 );
               })}
             </select>
-            {typeof errors.airline?.message === "string" && (
+            {typeof errors.airline_id?.message === "string" && (
               <span className="text-sm text-red-500">
                 {t("flights.validation.airline.required")}
               </span>
@@ -195,7 +195,7 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
                   <option value="">{t("cities.select")}</option>
                   {airlineCities.map((city) => {
                     const isSelected =
-                      field === "arrival_city" && watchedValues.departure_city === city.id;
+                      field === "arrival_city_id" && watchedValues.departure_city_id === city.id;
 
                     return (
                       <option
@@ -209,7 +209,7 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
                     );
                   })}
                 </select>
-                {typeof errors.departure_city?.message === "string" && (
+                {typeof errors.departure_city_id?.message === "string" && (
                   <span className="text-sm text-red-500">
                     {t("flights.validation.city.required")}
                   </span>

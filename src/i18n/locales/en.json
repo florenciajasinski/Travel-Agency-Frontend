@@ -250,8 +250,8 @@
   },
   "form": {
     "airline": "Airline",
-    "departure_city": "Departure City",
-    "arrival_city": "Arrival City",
+    "departure_city_id": "Departure City",
+    "arrival_city_id": "Arrival City",
     "departure_time": "Departure Time",
     "arrival_time": "Arrival Time"
 }

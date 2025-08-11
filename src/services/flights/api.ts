@@ -39,17 +39,14 @@ export const updateFlight = async (data: UpdateFlight) => {
 };
 
 export const getAllFlights = async (): Promise<Flight[]> => {
-  const response = await publicApi.get("flights");
-  if (response.data && response.data.data && Array.isArray(response.data.data)) {
-    const paginatedResult = parsePaginatedResponse(z.array(flightSchema), response.data);
+  const { data: flightsData } = await publicApi.get("flights");
+  if (flightsData && Array.isArray(flightsData.data)) {
+    const { data } = parsePaginatedResponse(z.array(flightSchema), flightsData);
 
-    return paginatedResult.data;
+    return data;
   }
-
-  if (Array.isArray(response.data)) {
-    const flightsArray = z.array(flightSchema).parse(response.data);
-
-    return flightsArray;
+  if (Array.isArray(flightsData)) {
+    return z.array(flightSchema).parse(flightsData);
   }
 
   return [];

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useCallback } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
@@ -7,6 +8,7 @@ import { DEFAULT_PAGE_SIZE } from "@/constants";
 import { paginationValidationWithDefaults, usePagination } from "@/hooks";
 import { useTranslation } from "@/i18n";
 import { useFlightsListQuery } from "@/services/flights/actions";
+import { getList } from "@/services/schemas";
 import { UpsertFlightDialog } from "./-components/upsert-flights-dialog";
 import { useFlightsTable } from "./-hooks/use-flights-table";
 
@@ -31,9 +33,16 @@ const FlightPage = () => {
   const isLoading = isLoadingAllFlights;
   const isSuccess = isSuccessAllFlights;
 
-  const lastPage = flightListData?.meta?.lastPage;
-  const pageSize = flightListData?.meta?.perPage ?? DEFAULT_PAGE_SIZE;
-  const totalItems = flightListData?.meta?.total ?? 0;
+  const { lastPage, pageSize, totalItems } = getList(flightListData, DEFAULT_PAGE_SIZE);
+  type Pagination = { pageIndex: number; pageSize: number };
+  const handlePaginationChange = useCallback(
+    (updater: Pagination | ((p: Pagination) => Pagination)) => {
+      const current: Pagination = { pageIndex, pageSize };
+      const next = typeof updater === "function" ? updater(current) : updater;
+      changePage(next);
+    },
+    [changePage, pageIndex, pageSize],
+  );
 
   useEffect(() => {
     if (isSuccess && lastPage && page > lastPage) {
@@ -44,18 +53,7 @@ const FlightPage = () => {
   const table = useFlightsTable({
     data: flightListData?.data ?? [],
     state: { pagination: { pageIndex, pageSize } },
-    onPaginationChange: (
-      updater:
-        | ((pagination: { pageIndex: number; pageSize: number }) => {
-            pageIndex: number;
-            pageSize: number;
-          })
-        | { pageIndex: number; pageSize: number },
-    ) => {
-      if (typeof updater === "function") {
-        changePage(updater({ pageIndex, pageSize }));
-      }
-    },
+    onPaginationChange: handlePaginationChange,
     pageCount: lastPage,
     meta: { totalItems },
   });

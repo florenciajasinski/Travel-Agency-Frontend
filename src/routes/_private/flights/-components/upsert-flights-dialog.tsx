@@ -40,6 +40,32 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
     { enabled: !!selectedAirlineId },
   );
 
+  const handleCreate = (payload: CreateFlight) => {
+    createFlight(payload, {
+      onSuccess: () => {
+        toast.success(t("flights.create.success"));
+        onOpenChange(false);
+        reset();
+      },
+      onError: (error) => {
+        handleAxiosFieldErrors<CreateFlight>(error, setError, t("flights.create.error"));
+      },
+    });
+  };
+
+  const handleUpdate = (payload: UpdateFlight) => {
+    updateFlight(payload, {
+      onSuccess: () => {
+        toast.success(t("flights.update.success"));
+        onOpenChange(false);
+        reset();
+      },
+      onError: (error) => {
+        handleAxiosFieldErrors<UpdateFlight>(error, setError, t("flights.update.error"));
+      },
+    });
+  };
+
   const airlineCities = Array.isArray(airlineCitiesData?.data) ? airlineCitiesData.data : [];
 
   const {
@@ -94,31 +120,10 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
     };
 
     if (isNewFlight) {
-      return createFlight(payload, {
-        onSuccess: () => {
-          toast.success(t("flights.create.success"));
-          onOpenChange(false);
-          reset();
-        },
-        onError: (error) => {
-          handleAxiosFieldErrors<CreateFlight>(error, setError, t("flights.create.error"));
-        },
-      });
+      return handleCreate(payload);
     }
 
-    return updateFlight(
-      { id: currentFlight!.id, ...payload },
-      {
-        onSuccess: () => {
-          toast.success(t("flights.update.success"));
-          onOpenChange(false);
-          reset();
-        },
-        onError: (error) => {
-          handleAxiosFieldErrors<UpdateFlight>(error, setError, t("flights.update.error"));
-        },
-      },
-    );
+    return handleUpdate({ id: currentFlight!.id, ...payload });
   };
 
   const handleAirlineChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

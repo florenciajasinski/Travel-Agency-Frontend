@@ -89,7 +89,7 @@ export const UpsertAirlineDialog = ({
   const onSubmit: SubmitHandler<UpsertAirlineFormData> = (data) => {
     const payload = {
       name: data.name ?? "",
-      description: data.description,
+      description: data.description ?? "",
     };
 
     if (isNewAirline) {

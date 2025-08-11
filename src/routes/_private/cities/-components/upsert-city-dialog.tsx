@@ -37,6 +37,32 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
     { enabled: !!currentCity },
   );
 
+  const handleCreate = (payload: CreateCity) => {
+    createCity(payload, {
+      onSuccess: () => {
+        toast.success(t("cities.create.success"));
+        onOpenChange(false);
+        reset();
+      },
+      onError: (error) => {
+        handleAxiosFieldErrors<CreateCity>(error, setError, t("cities.create.error"));
+      },
+    });
+  };
+
+  const handleUpdate = (payload: UpdateCity) => {
+    updateCity(payload, {
+      onSuccess: () => {
+        toast.success(t("cities.update.success"));
+        onOpenChange(false);
+        reset();
+      },
+      onError: (error) => {
+        handleAxiosFieldErrors<UpdateCity>(error, setError, t("cities.update.error"));
+      },
+    });
+  };
+
   const cityAirlineIds = Array.isArray(cityAirlines)
     ? cityAirlines.map((a: { id: number }) => {
         return a.id.toString();
@@ -88,34 +114,10 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
     };
 
     if (isNewCity) {
-      return createCity(
-        { name: payload.name },
-        {
-          onSuccess: () => {
-            toast.success(t("cities.create.success"));
-            onOpenChange(false);
-            reset();
-          },
-          onError: (error) => {
-            handleAxiosFieldErrors<CreateCity>(error, setError, t("cities.create.error"));
-          },
-        },
-      );
+      return handleCreate(payload);
     }
 
-    return updateCity(
-      { ...payload, id: currentCity.id },
-      {
-        onSuccess: () => {
-          toast.success(t("cities.update.success"));
-          onOpenChange(false);
-          reset();
-        },
-        onError: (error) => {
-          handleAxiosFieldErrors<UpdateCity>(error, setError, t("cities.update.error"));
-        },
-      },
-    );
+    return handleUpdate({ ...payload, id: currentCity.id });
   };
 
   const handleOpenChange = (open: boolean) => {

@@ -88,6 +88,8 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
     defaultValues: {
       name: currentCity?.name ?? "",
       airline_ids: isNewCity ? undefined : cityAirlineIds.map(Number),
+      incomingFlights: currentCity?.incomingFlights ?? 0,
+      outgoingFlights: currentCity?.outgoingFlights ?? 0,
     },
   });
 

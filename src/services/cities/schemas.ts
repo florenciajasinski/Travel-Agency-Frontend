@@ -13,14 +13,10 @@ export const citySchema = z.object({
 });
 
 export const getCitySchema = () => {
-  return citySchema
-    .omit({ id: true })
-    .extend({
-      name: z.string().min(1, { message: i18n.t("cities.validation.required") }),
-    })
-    .extend({
-      incomingFlights: z.number().min(0).optional(),
-      outgoingFlights: z.number().min(0).optional(),
-      airline_ids: z.array(z.coerce.number()).optional(),
-    });
+  return z.object({
+    name: z.string().min(1, { message: i18n.t("cities.validation.required") }),
+    incomingFlights: z.number().min(0).optional(),
+    outgoingFlights: z.number().min(0).optional(),
+    airline_ids: z.array(z.coerce.number()).optional(),
+  });
 };

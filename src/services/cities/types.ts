@@ -14,7 +14,4 @@ export type CreateCity = z.infer<ReturnType<typeof getCitySchema>>;
 
 export type UpdateCity = z.infer<ReturnType<typeof getCitySchema>> & Pick<City, "id">;
 
-export type UpsertCityFormData = {
-  name: string;
-  airline_ids?: number[];
-};
+export type UpsertCityFormData = z.input<ReturnType<typeof getCitySchema>>;

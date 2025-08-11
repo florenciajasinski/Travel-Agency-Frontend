@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useMemo } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -52,7 +53,9 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
     { enabled: !!selectedAirlineId },
   );
 
-  const airlineCities = Array.isArray(airlineCitiesData?.data) ? airlineCitiesData.data : [];
+  const airlineCities = useMemo(() => {
+    return Array.isArray(airlineCitiesData?.data) ? airlineCitiesData.data : [];
+  }, [airlineCitiesData]);
 
   const {
     clearErrors,
@@ -90,7 +93,7 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
     if (!isOpen) {
       hasResetRef.current = false;
     }
-  }, [isOpen, currentFlight, reset]);
+  }, [isOpen, currentFlight, reset, initialAirlineId, initialArrivalId, initialDepartureId]);
 
   useEffect(() => {
     if (!isOpen || !currentFlight) {

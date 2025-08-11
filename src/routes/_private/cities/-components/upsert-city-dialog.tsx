@@ -107,7 +107,7 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
     if (!isOpen) {
       hasResetRef.current = false;
     }
-  }, [isOpen, currentCity, cityAirlines, reset]);
+  }, [isOpen, currentCity, cityAirlines, cityAirlineIds, isNewCity, reset]);
 
   const onSubmit: SubmitHandler<UpsertCityFormData> = (data) => {
     const payload = {

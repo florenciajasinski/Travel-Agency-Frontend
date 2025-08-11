@@ -162,9 +162,9 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
   const handleAirlineChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const id = Number(e.target.value);
     setSelectedAirlineId(id || undefined);
-    setValue("airline_id", id || (undefined as unknown as number));
-    setValue("departure_city_id", undefined as unknown as number);
-    setValue("arrival_city_id", undefined as unknown as number);
+    setValue("airline_id", id);
+    setValue("departure_city_id", 0);
+    setValue("arrival_city_id", 0);
     clearErrors(["departure_city_id", "arrival_city_id"]);
   };
 
@@ -200,14 +200,18 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
               className="rounded border px-3 py-2 text-sm disabled:opacity-50"
               disabled={isLoadingAirlines}
               id="airline"
-              {...register("airline_id", { valueAsNumber: true })}
+              {...register("airline_id", {
+                setValueAs: (v) => {
+                  return v === "" ? 0 : Number(v);
+                },
+              })}
               onChange={handleAirlineChange}
-              value={selectedAirlineId ?? ""}
+              value={selectedAirlineId ? String(selectedAirlineId) : ""}
             >
               <option value="">{t("airlines.select")}</option>
               {airlines.map((airline) => {
                 return (
-                  <option key={airline.id} value={airline.id}>
+                  <option key={airline.id} value={String(airline.id)}>
                     {airline.name}
                   </option>
                 );
@@ -223,20 +227,25 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
                   className="rounded border px-3 py-2 text-sm disabled:opacity-50"
                   disabled={isLoadingAirlineCities || !selectedAirlineId}
                   id={field}
-                  value={watch(field) ?? ""}
-                  {...register(field, { valueAsNumber: true })}
+                  {...register(field, {
+                    setValueAs: (v) => {
+                      return v === "" ? 0 : Number(v);
+                    },
+                  })}
+                  value={watch(field) ? String(watch(field)) : ""}
                 >
                   <option value="">{t("cities.select")}</option>
                   {airlineCities.map((city) => {
                     const isSelectedAsDeparture =
-                      field === "arrival_city_id" && watched.departure_city_id === city.id;
+                      field === "arrival_city_id" &&
+                      String(watched.departure_city_id) === String(city.id);
 
                     return (
                       <option
                         disabled={isSelectedAsDeparture}
                         key={city.id}
                         style={isSelectedAsDeparture ? { color: "#999" } : undefined}
-                        value={city.id}
+                        value={String(city.id)}
                       >
                         {city.name} {isSelectedAsDeparture ? "(Already selected as departure)" : ""}
                       </option>

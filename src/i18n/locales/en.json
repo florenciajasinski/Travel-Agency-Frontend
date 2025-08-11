@@ -227,8 +227,11 @@
       "airline": {
         "required": "Airline is required."
       },
-      "city": {
-        "required": "City is required."
+      "departure": {
+        "required": "Departure city is required."
+      },
+      "arrival": {
+        "required": "Arrival city is required."
       },
       "departure_time": {
         "required": "Departure time is required."

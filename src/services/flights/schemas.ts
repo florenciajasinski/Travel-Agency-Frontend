@@ -18,10 +18,8 @@ export const getFlightSchema = () => {
     airline_id: z.number().min(1, { message: i18n.t("flights.validation.airline.required") }),
     departure_city_id: z
       .number()
-      .min(1, { message: i18n.t("flights.validation.departure_city_id.required") }),
-    arrival_city_id: z
-      .number()
-      .min(1, { message: i18n.t("flights.validation.arrival_city_id.required") }),
+      .min(1, { message: i18n.t("flights.validation.departure.required") }),
+    arrival_city_id: z.number().min(1, { message: i18n.t("flights.validation.arrival.required") }),
     departure_time: z
       .string()
       .min(1, { message: i18n.t("flights.validation.departure_time.required") }),

@@ -41,7 +41,5 @@ export const useAirlinesTable = ({
     ];
   }, [t]);
 
-  console.log("Airlines table data:", data);
-
   return useTable({ columns, data, ...props });
 };

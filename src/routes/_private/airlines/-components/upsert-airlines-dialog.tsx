@@ -31,6 +31,32 @@ export const UpsertAirlineDialog = ({
   const { isPending: isUpdating, mutate: updateAirline } = useUpdateAirlineMutation();
   const isPending = isUpdating || isCreating;
 
+  const handleCreate = (payload: CreateAirline) => {
+    createAirline(payload, {
+      onSuccess: () => {
+        toast.success(t("airlines.create.success"));
+        onOpenChange(false);
+        reset();
+      },
+      onError: (error) => {
+        handleAxiosFieldErrors<CreateAirline>(error, setError, t("airlines.create.error"));
+      },
+    });
+  };
+
+  const handleUpdate = (payload: UpdateAirline) => {
+    updateAirline(payload, {
+      onSuccess: () => {
+        toast.success(t("airlines.update.success"));
+        onOpenChange(false);
+        reset();
+      },
+      onError: (error) => {
+        handleAxiosFieldErrors<UpdateAirline>(error, setError, t("airlines.update.error"));
+      },
+    });
+  };
+
   const {
     formState: { errors },
     handleSubmit,
@@ -67,31 +93,10 @@ export const UpsertAirlineDialog = ({
     };
 
     if (isNewAirline) {
-      return createAirline(payload, {
-        onSuccess: () => {
-          toast.success(t("airlines.create.success"));
-          onOpenChange(false);
-          reset();
-        },
-        onError: (error) => {
-          handleAxiosFieldErrors<CreateAirline>(error, setError, t("airlines.create.error"));
-        },
-      });
+      return handleCreate(payload);
     }
 
-    return updateAirline(
-      { id: currentAirline!.id, ...payload },
-      {
-        onSuccess: () => {
-          toast.success(t("airlines.update.success"));
-          onOpenChange(false);
-          reset();
-        },
-        onError: (error) => {
-          handleAxiosFieldErrors<UpdateAirline>(error, setError, t("airlines.update.error"));
-        },
-      },
-    );
+    return handleUpdate({ id: currentAirline!.id, ...payload });
   };
 
   const handleOpenChange = (open: boolean) => {

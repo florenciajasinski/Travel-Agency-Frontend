@@ -10,6 +10,6 @@ export type FlightFilterKey = (typeof FLIGHT_FILTER_KEYS)[keyof typeof FLIGHT_FI
 
 export type FlightRequestParams = RequestParams<Record<FlightFilterKey, string | undefined>>;
 
-export type CreateFlight = z.infer<ReturnType<typeof getFlightSchema>>;
+export type CreateFlightPayload = z.infer<ReturnType<typeof getFlightSchema>>;
 
-export type UpdateFlight = z.infer<ReturnType<typeof getFlightSchema>> & Pick<Flight, "id">;
+export type UpdateFlightPayload = z.infer<ReturnType<typeof getFlightSchema>> & Pick<Flight, "id">;

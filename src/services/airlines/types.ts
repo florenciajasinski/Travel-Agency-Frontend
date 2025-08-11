@@ -10,9 +10,10 @@ export type AirlineFilterKey = (typeof AIRLINE_FILTER_KEYS)[keyof typeof AIRLINE
 
 export type AirlineRequestParams = RequestParams<Record<AirlineFilterKey, string | undefined>>;
 
-export type CreateAirline = z.infer<ReturnType<typeof getAirlineSchema>>;
+export type CreateAirlinePayload = z.infer<ReturnType<typeof getAirlineSchema>>;
 
-export type UpdateAirline = z.infer<ReturnType<typeof getAirlineSchema>> & Pick<Airline, "id">;
+export type UpdateAirlinePayload = z.infer<ReturnType<typeof getAirlineSchema>> &
+  Pick<Airline, "id">;
 
 export type UpsertAirlineFormData = {
   name: string;

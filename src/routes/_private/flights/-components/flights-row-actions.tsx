@@ -53,7 +53,7 @@ export const FlightsRowActions = ({ row }: FlightsRowActionsProps) => {
       />
 
       <DeleteFlightDialog
-        flight={row.original}
+        flightId={row.original.id}
         isOpen={showConfirmDelete}
         onOpenChange={setShowConfirmDelete}
       />

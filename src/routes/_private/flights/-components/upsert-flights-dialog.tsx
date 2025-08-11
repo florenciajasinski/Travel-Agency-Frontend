@@ -9,7 +9,7 @@ import { useAllAirlinesQuery } from "@/services/airlines/actions";
 import { useAirlineCitiesQuery } from "@/services/cities/actions";
 import { useCreateFlightMutation, useUpdateFlightMutation } from "@/services/flights/actions";
 import { getFlightSchema } from "@/services/flights/schemas";
-import type { CreateFlight, Flight, UpdateFlight } from "@/services/flights/types";
+import type { CreateFlightPayload, Flight, UpdateFlightPayload } from "@/services/flights/types";
 import { toDateInput } from "@/services/schemas";
 import { handleAxiosFieldErrors } from "@/utils";
 
@@ -33,8 +33,6 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
   const { data: airlinesData, isLoading: isLoadingAirlines } = useAllAirlinesQuery();
   const airlines = Array.isArray(airlinesData) ? airlinesData : [];
 
-  const initialAirlineId = currentFlight?.airline?.id ?? undefined;
-
   const getCityId = (flight?: Flight, cityType?: "departure" | "arrival"): number | undefined => {
     if (!flight || !cityType) {
       return undefined;
@@ -46,7 +44,10 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
   const initialDepartureId = getCityId(currentFlight, "departure");
   const initialArrivalId = getCityId(currentFlight, "arrival");
 
-  const [selectedAirlineId, setSelectedAirlineId] = useState<number | undefined>(initialAirlineId);
+  const initialAirlineId = currentFlight?.airline?.id ?? airlines[0]?.id;
+
+  const [selectedAirlineId, setSelectedAirlineId] =
+    useState<Flight["airline"]["id"]>(initialAirlineId);
 
   const { data: airlineCitiesData, isLoading: isLoadingAirlineCities } = useAirlineCitiesQuery(
     { airlineId: selectedAirlineId?.toString() || "", page: 1 },
@@ -66,7 +67,7 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
     setError,
     setValue,
     watch,
-  } = useForm<CreateFlight>({
+  } = useForm<CreateFlightPayload>({
     mode: "onTouched",
     resolver: zodResolver(getFlightSchema()),
     defaultValues: {
@@ -95,29 +96,7 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
     }
   }, [isOpen, currentFlight, reset, initialAirlineId, initialArrivalId, initialDepartureId]);
 
-  useEffect(() => {
-    if (!isOpen || !currentFlight) {
-      return;
-    }
-    if (!isLoadingAirlineCities && airlineCities.length > 0) {
-      if (initialDepartureId) {
-        setValue("departure_city_id", initialDepartureId);
-      }
-      if (initialArrivalId) {
-        setValue("arrival_city_id", initialArrivalId);
-      }
-    }
-  }, [
-    isOpen,
-    currentFlight,
-    isLoadingAirlineCities,
-    airlineCities,
-    initialDepartureId,
-    initialArrivalId,
-    setValue,
-  ]);
-
-  const handleCreate = (payload: CreateFlight) => {
+  const handleCreate = (payload: CreateFlightPayload) => {
     createFlight(payload, {
       onSuccess: () => {
         toast.success(t("flights.create.success"));
@@ -125,12 +104,12 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
         reset();
       },
       onError: (error) => {
-        handleAxiosFieldErrors<CreateFlight>(error, setError, t("flights.create.error"));
+        handleAxiosFieldErrors<CreateFlightPayload>(error, setError, t("flights.create.error"));
       },
     });
   };
 
-  const handleUpdate = (payload: UpdateFlight) => {
+  const handleUpdate = (payload: UpdateFlightPayload) => {
     updateFlight(payload, {
       onSuccess: () => {
         toast.success(t("flights.update.success"));
@@ -138,12 +117,12 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
         reset();
       },
       onError: (error) => {
-        handleAxiosFieldErrors<UpdateFlight>(error, setError, t("flights.update.error"));
+        handleAxiosFieldErrors<UpdateFlightPayload>(error, setError, t("flights.update.error"));
       },
     });
   };
 
-  const onSubmit: SubmitHandler<CreateFlight> = (data) => {
+  const onSubmit: SubmitHandler<CreateFlightPayload> = (data) => {
     const payload = {
       airline_id: data.airline_id,
       departure_city_id: data.departure_city_id,
@@ -161,7 +140,7 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
 
   const handleAirlineChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const id = Number(e.target.value);
-    setSelectedAirlineId(id || undefined);
+    setSelectedAirlineId(id);
     setValue("airline_id", id);
     setValue("departure_city_id", 0);
     setValue("arrival_city_id", 0);

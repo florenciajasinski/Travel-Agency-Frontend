@@ -4,7 +4,12 @@ import { z } from "zod";
 import { publicApi } from "@/config/api";
 import { parsePaginatedResponse } from "@/services/schemas";
 import { flightSchema } from "./schemas";
-import type { CreateFlight, Flight, FlightRequestParams, UpdateFlight } from "./types";
+import type {
+  CreateFlightPayload,
+  Flight,
+  FlightRequestParams,
+  UpdateFlightPayload,
+} from "./types";
 
 export const getFlightsList = async ({ page }: FlightRequestParams) => {
   const response = await publicApi.get("flights", {
@@ -22,7 +27,7 @@ export const deleteFlight = async (id: Flight["id"]) => {
   return response;
 };
 
-export const createFlight = async (data: CreateFlight) => {
+export const createFlight = async (data: CreateFlightPayload) => {
   const payload = deepSnakeKeys(data);
 
   const response = await publicApi.post("flights", payload);
@@ -30,7 +35,7 @@ export const createFlight = async (data: CreateFlight) => {
   return response;
 };
 
-export const updateFlight = async (data: UpdateFlight) => {
+export const updateFlight = async (data: UpdateFlightPayload) => {
   const payload = deepSnakeKeys(data);
 
   const response = await publicApi.put(`flights/${data.id}`, payload);

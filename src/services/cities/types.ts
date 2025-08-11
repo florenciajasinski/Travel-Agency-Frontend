@@ -10,8 +10,8 @@ export type CityFilterKey = (typeof CITY_FILTER_KEYS)[keyof typeof CITY_FILTER_K
 
 export type CityRequestParams = RequestParams<Record<CityFilterKey, string | undefined>>;
 
-export type CreateCity = z.infer<ReturnType<typeof getCitySchema>>;
+export type CreateCityPayload = z.infer<ReturnType<typeof getCitySchema>>;
 
-export type UpdateCity = z.infer<ReturnType<typeof getCitySchema>> & Pick<City, "id">;
+export type UpdateCityPayload = z.infer<ReturnType<typeof getCitySchema>> & Pick<City, "id">;
 
 export type UpsertCityFormData = z.input<ReturnType<typeof getCitySchema>>;

@@ -11,7 +11,7 @@ import {
   useUpdateCityMutation,
 } from "@/services/cities/actions";
 import { getCitySchema } from "@/services/cities/schemas";
-import type { City, CreateCity, UpdateCity } from "@/services/cities/types";
+import type { City, CreateCityPayload, UpdateCityPayload } from "@/services/cities/types";
 import type { UpsertCityFormData } from "@/services/cities/types";
 import { handleAxiosFieldErrors } from "@/utils";
 
@@ -37,7 +37,7 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
     { enabled: !!currentCity },
   );
 
-  const handleCreate = (payload: CreateCity) => {
+  const handleCreate = (payload: CreateCityPayload) => {
     createCity(payload, {
       onSuccess: () => {
         toast.success(t("cities.create.success"));
@@ -45,12 +45,12 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
         reset();
       },
       onError: (error) => {
-        handleAxiosFieldErrors<CreateCity>(error, setError, t("cities.create.error"));
+        handleAxiosFieldErrors<CreateCityPayload>(error, setError, t("cities.create.error"));
       },
     });
   };
 
-  const handleUpdate = (payload: UpdateCity) => {
+  const handleUpdate = (payload: UpdateCityPayload) => {
     updateCity(payload, {
       onSuccess: () => {
         toast.success(t("cities.update.success"));
@@ -58,7 +58,7 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
         reset();
       },
       onError: (error) => {
-        handleAxiosFieldErrors<UpdateCity>(error, setError, t("cities.update.error"));
+        handleAxiosFieldErrors<UpdateCityPayload>(error, setError, t("cities.update.error"));
       },
     });
   };

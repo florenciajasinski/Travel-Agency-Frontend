@@ -1,26 +1,25 @@
 import { Button, Dialog, toast } from "@/components/ui";
 import { useTranslation } from "@/i18n";
 import { useFlightsDeleteMutation } from "@/services";
-import type { Flight } from "@/services/flights/types";
 
 type DeleteFlightDialogProps = {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  flight: Flight;
+  flightId: number;
 };
 
-export const DeleteFlightDialog = ({ flight, isOpen, onOpenChange }: DeleteFlightDialogProps) => {
+export const DeleteFlightDialog = ({ flightId, isOpen, onOpenChange }: DeleteFlightDialogProps) => {
   const { t } = useTranslation();
 
   const { isPending, mutate: deleteFlight } = useFlightsDeleteMutation();
 
   const handleDelete = async () => {
-    deleteFlight(flight.id, {
+    deleteFlight(flightId, {
       onSuccess: () => {
-        toast.success(t("flights.table.columns.actions.deletionSuccess", { name: flight.id }));
+        toast.success(t("flights.table.columns.actions.deletionSuccess", { name: flightId }));
       },
       onError: () => {
-        toast.error(t("flights.table.columns.actions.deletionError", { name: flight.id }));
+        toast.error(t("flights.table.columns.actions.deletionError", { name: flightId }));
       },
       onSettled: () => {
         onOpenChange(false);
@@ -35,7 +34,7 @@ export const DeleteFlightDialog = ({ flight, isOpen, onOpenChange }: DeleteFligh
           <Dialog.Title>{t("flights.table.columns.actions.areYouAbsolutelySure")}</Dialog.Title>
 
           <Dialog.Description>
-            {t("flights.table.columns.actions.thisActionCantBeUndone", { name: flight.id })}
+            {t("flights.table.columns.actions.thisActionCantBeUndone", { name: flightId })}
           </Dialog.Description>
         </Dialog.Header>
 

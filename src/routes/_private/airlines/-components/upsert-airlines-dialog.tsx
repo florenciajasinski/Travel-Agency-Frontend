@@ -69,6 +69,7 @@ export const UpsertAirlineDialog = ({
     defaultValues: {
       name: currentAirline?.name ?? "",
       description: currentAirline?.description ?? "",
+      flightsCount: currentAirline?.flightsCount ?? 0,
     },
   });
 

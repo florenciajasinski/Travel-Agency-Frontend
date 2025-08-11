@@ -15,6 +15,7 @@ export type CreateAirline = z.infer<ReturnType<typeof getAirlineSchema>>;
 export type UpdateAirline = z.infer<ReturnType<typeof getAirlineSchema>> & Pick<Airline, "id">;
 
 export type UpsertAirlineFormData = {
-  name?: string;
-  description?: string;
+  name: string;
+  description: string;
+  flightsCount?: number;
 };

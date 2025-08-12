@@ -10,9 +10,9 @@ const PrivateLayout = () => {
   const { t } = useTranslation();
 
   const links: { path: AvailableRoutesToPath; label: string }[] = [
-    { path: "/", label: t("navigation.links.home") },
-    { path: "/dashboard", label: t("navigation.links.dashboard") },
-    { path: "/users", label: t("navigation.links.users") },
+    { path: "/cities", label: t("navigation.links.cities") },
+    { path: "/airlines", label: t("navigation.links.airlines") },
+    { path: "/flights", label: t("navigation.links.flights") },
   ];
 
   return (

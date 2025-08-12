@@ -4,11 +4,56 @@
     "no": "No",
     "close": "Close",
     "filter": "Filter",
-    "requestError": "Unable to complete the request. Please try again later."
+    "requestError": "Unable to complete the request. Please try again later.",
+    "clear": "Clear"
   },
+  "dashboard": {
+    "welcome": "Welcome to the Flight Manager"
+  },
+  "cities": {
+  "title": "Cities",
+  "create": {
+    "title": "Add City"
+  },
+  "table": {
+    "columns": {
+      "id": "ID",
+      "name": "Name",
+      "incomingFlights": "Incoming Flights",
+      "outgoingFlights": "Outgoing Flights",
+      "actions": {
+      "areYouAbsolutelySure": "Are you absolutely sure?",
+      "thisActionCantBeUndone": "This action cannot be undone. Are you sure you want to permanently delete { name }?",
+      "deletionSuccess": "{ name } was deleted successfully!",
+      "deletionError": "There was an error deleting { name }."
+      }
+    }
+  },
+  "validation": {
+    "required": "City name is required.",
+    "minLength": "City name must be at least 3 characters long.",
+    "invalidNumber": "Please enter a valid number."
+  },
+  "create": {
+      "description": "Complete to create a new City",
+      "title": "Add City",
+      "success": "City created successfully",
+      "error": "Not able to create city"
+    },
+    "update": {
+      "description": "Complete the form to update the city",
+      "title": "Update City",
+      "success": "City updated successfully",
+      "error": "Not able to update city"
+    }
+},
+"airlines": {
+  "all": "All Airlines",
+  "title": "Airlines"
+},
   "greetings": {
     "rootLayout": "Root layout! I render on all paths (in English)",
-    "exactPath": "Hello {exactPath} exact path!",
+    "exactPath": "Hello {exactPath} exact hhhh!",
     "privateLayout": "Hello private layout! I render on all paths inside the /_private/ folder",
     "publicLayout": "Public layout! I render on all paths inside the /(public)/ folder",
     "home": "Welcome Home!"
@@ -17,6 +62,7 @@
     "email": "Email",
     "password": "Password",
     "name": "Name",
+    "airlines": "Airlines",
     "confirmPassword": "Confirm Password",
     "passwordMustInclude": "Password must include",
     "errors": {
@@ -94,9 +140,25 @@
   },
   "navigation": {
     "links": {
-      "home": "Home",
-      "dashboard": "Dashboard",
+      "cities": "Cities",
+      "airlines": "Airlines",
+      "flights": "Flights",
       "users": "Users"
+    }
+  },
+  "flights": {
+    "title": "Flights",
+    "create": {
+      "description": "Complete the form to create a new flight",
+      "title": "Add Flight",
+      "success": "Flight created successfully",
+      "error": "Not able to create flight"
+    },
+    "update": {
+      "description": "Complete the form to update the flight",
+      "title": "Update Flight",
+      "success": "Flight updated successfully",
+      "error": "Not able to update flight"
     }
   }
 }

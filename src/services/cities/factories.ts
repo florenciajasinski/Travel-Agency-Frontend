@@ -4,6 +4,7 @@ import {
   createCity,
   deleteCity,
   getAirlineCities,
+  getAllCities,
   getCitiesList,
   getCityAirlines,
   updateCity,
@@ -15,6 +16,14 @@ export const queries = createQueryKeys("cities", {
       queryKey: [params],
       queryFn: () => {
         return getCitiesList(params);
+      },
+    };
+  },
+  all: () => {
+    return {
+      queryKey: ["all"],
+      queryFn: () => {
+        return getAllCities();
       },
     };
   },

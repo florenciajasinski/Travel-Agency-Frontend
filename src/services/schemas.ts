@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { DEFAULT_PAGE_SIZE } from "@/constants";
+
 const paginatedResponseSchema = z.object({
   meta: z.object({
     lastPage: z.number(),
@@ -29,5 +31,26 @@ export const formatListResponse = <T>(schema: z.ZodType<T>, raw: unknown, initia
   return {
     data: parsed,
     meta,
+  };
+};
+
+export const getList = (
+  list?: {
+    meta?: {
+      last_page?: number;
+      lastPage?: number;
+      per_page?: number;
+      perPage?: number;
+      total?: number;
+    };
+  },
+  defaultPageSize = DEFAULT_PAGE_SIZE,
+) => {
+  const m = list?.meta ?? {};
+
+  return {
+    lastPage: m.last_page ?? m.lastPage,
+    pageSize: m.per_page ?? m.perPage ?? defaultPageSize,
+    totalItems: m.total ?? 0,
   };
 };

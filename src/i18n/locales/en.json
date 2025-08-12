@@ -11,31 +11,32 @@
     "welcome": "Welcome to the Flight Manager"
   },
   "cities": {
-  "title": "Cities",
-  "all": "All Cities",
-  "create": {
-    "title": "Add City"
-  },
-  "table": {
-    "columns": {
-      "id": "ID",
-      "name": "Name",
-      "incomingFlights": "Incoming Flights",
-      "outgoingFlights": "Outgoing Flights",
-      "actions": {
-      "areYouAbsolutelySure": "Are you absolutely sure?",
-      "thisActionCantBeUndone": "This action cannot be undone. Are you sure you want to permanently delete { name }?",
-      "deletionSuccess": "{ name } was deleted successfully!",
-      "deletionError": "There was an error deleting { name }."
+    "select": "Select a City",
+    "title": "Cities",
+    "all": "All Cities",
+    "create": {
+      "title": "Add City"
+    },
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Name",
+        "incomingFlights": "Incoming Flights",
+        "outgoingFlights": "Outgoing Flights",
+        "actions": {
+          "areYouAbsolutelySure": "Are you absolutely sure?",
+          "thisActionCantBeUndone": "This action cannot be undone. Are you sure you want to permanently delete { name }?",
+          "deletionSuccess": "{ name } was deleted successfully!",
+          "deletionError": "There was an error deleting { name }."
+        }
       }
-    }
-  },
-  "validation": {
-    "required": "City name is required.",
-    "minLength": "City name must be at least 3 characters long.",
-    "invalidNumber": "Please enter a valid number."
-  },
-  "create": {
+    },
+    "validation": {
+      "required": "City name is required.",
+      "minLength": "City name must be at least 3 characters long.",
+      "invalidNumber": "Please enter a valid number."
+    },
+    "create": {
       "description": "Complete to create a new City",
       "title": "Add City",
       "success": "City created successfully",
@@ -47,45 +48,49 @@
       "success": "City updated successfully",
       "error": "Not able to update city"
     }
-},
-"airlines": {
-  "all": "All Airlines",
-  "title": "Airlines",
-  "create": {
-    "title": "Add City"
   },
-  "table": {
-    "columns": {
-      "id": "ID",
-      "name": "Name",
-      "description": "Description",
-      "flightsCount": "Number of Flights",
-      "actions": {
-      "areYouAbsolutelySure": "Are you absolutely sure?",
-      "thisActionCantBeUndone": "This action cannot be undone. Are you sure you want to permanently delete { name }?",
-      "deletionSuccess": "{ name } was deleted successfully!",
-      "deletionError": "There was an error deleting { name }."
+  "airlines": {
+    "all": "All Airlines",
+    "title": "Airlines",
+    "select": "Select an Airline",
+    "create": {
+      "title": "Add City"
+    },
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Name",
+        "description": "Description",
+        "flightsCount": "Number of Flights",
+        "actions": {
+          "areYouAbsolutelySure": "Are you absolutely sure?",
+          "thisActionCantBeUndone": "This action cannot be undone. Are you sure you want to permanently delete { name }?",
+          "deletionSuccess": "{ name } was deleted successfully!",
+          "deletionError": "There was an error deleting { name }."
+        }
       }
+    },
+    "validation": {
+      "name": {
+        "required": "Airline name is required."
+      },
+      "description": {
+        "required": "Airline description is required."
+      }
+    },
+    "create": {
+      "description": "Description",
+      "title": "Add Airline",
+      "success": "Airline created successfully",
+      "error": "Not able to create airline"
+    },
+    "update": {
+      "description": "Complete the form to update the airline",
+      "title": "Update Airline",
+      "success": "Airline updated successfully",
+      "error": "Not able to update airline"
     }
   },
-  "validation": {
-    "required": "Airline name is required.",
-    "minLength": "Airline name must be at least 3 characters long.",
-    "invalidNumber": "Please enter a valid number."
-  },
-  "create": {
-    "description": "Description",
-    "title": "Add Airline",
-    "success": "Airline created successfully",
-    "error": "Not able to create airline"
-  },
-  "update": {
-    "description": "Complete the form to update the airline",
-    "title": "Update Airline",
-    "success": "Airline updated successfully",
-    "error": "Not able to update airline"
-  }
-},
   "greetings": {
     "rootLayout": "Root layout! I render on all paths (in English)",
     "exactPath": "Hello {exactPath} exact hhhh!",
@@ -194,6 +199,64 @@
       "title": "Update Flight",
       "success": "Flight updated successfully",
       "error": "Not able to update flight"
+    }
+  },
+  "flights": {
+    "all": "All Flights",
+    "title": "Flights",
+    "create": {
+      "title": "Add Flight"
+    },
+    "table": {
+      "columns": {
+        "id": "ID",
+        "airline": "Airline",
+        "departureCity": "Departure City",
+        "arrivalCity": "Arrival City",
+        "departureTime": "Departure Time",
+        "arrivalTime": "Arrival Time",
+        "actions": {
+          "areYouAbsolutelySure": "Are you absolutely sure?",
+          "thisActionCantBeUndone": "This action cannot be undone. Are you sure you want to permanently delete { name }?",
+          "deletionSuccess": "{ name } was deleted successfully!",
+          "deletionError": "There was an error deleting { name }."
+        }
+      }
+    },
+    "validation": {
+      "airline": {
+        "required": "Airline is required."
+      },
+      "departure": {
+        "required": "Departure city is required."
+      },
+      "arrival": {
+        "required": "Arrival city is required."
+      },
+      "departure_time": {
+        "required": "Departure time is required."
+      },
+      "arrival_time": {
+        "required": "Arrival time is required."
+      }
+    },
+    "create": {
+      "title": "Add Flight",
+      "success": "Flight created successfully",
+      "error": "Not able to create flight"
+    },
+    "update": {
+      "description": "Complete the form to update the flight",
+      "title": "Update Flight",
+      "success": "Flight updated successfully",
+      "error": "Not able to update flight"
+    },
+    "form": {
+      "airline": "Airline",
+      "departure_city_id": "Departure City",
+      "arrival_city_id": "Arrival City",
+      "departure_time": "Departure Time",
+      "arrival_time": "Arrival Time"
     }
   }
 }

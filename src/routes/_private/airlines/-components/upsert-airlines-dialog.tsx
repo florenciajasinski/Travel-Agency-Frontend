@@ -6,7 +6,11 @@ import { Button, Dialog, ErrorMessage, Input, Label, toast } from "@/components/
 import { useTranslation } from "@/i18n";
 import { useCreateAirlineMutation, useUpdateAirlineMutation } from "@/services/airlines/actions";
 import { getAirlineSchema } from "@/services/airlines/schemas";
-import type { Airline, CreateAirline, UpdateAirline } from "@/services/airlines/types";
+import type {
+  Airline,
+  CreateAirlinePayload,
+  UpdateAirlinePayload,
+} from "@/services/airlines/types";
 import type { UpsertAirlineFormData } from "@/services/airlines/types";
 import { handleAxiosFieldErrors } from "@/utils";
 
@@ -31,7 +35,7 @@ export const UpsertAirlineDialog = ({
   const { isPending: isUpdating, mutate: updateAirline } = useUpdateAirlineMutation();
   const isPending = isUpdating || isCreating;
 
-  const handleCreate = (payload: CreateAirline) => {
+  const handleCreate = (payload: CreateAirlinePayload) => {
     createAirline(payload, {
       onSuccess: () => {
         toast.success(t("airlines.create.success"));
@@ -39,12 +43,12 @@ export const UpsertAirlineDialog = ({
         reset();
       },
       onError: (error) => {
-        handleAxiosFieldErrors<CreateAirline>(error, setError, t("airlines.create.error"));
+        handleAxiosFieldErrors<CreateAirlinePayload>(error, setError, t("airlines.create.error"));
       },
     });
   };
 
-  const handleUpdate = (payload: UpdateAirline) => {
+  const handleUpdate = (payload: UpdateAirlinePayload) => {
     updateAirline(payload, {
       onSuccess: () => {
         toast.success(t("airlines.update.success"));
@@ -52,7 +56,7 @@ export const UpsertAirlineDialog = ({
         reset();
       },
       onError: (error) => {
-        handleAxiosFieldErrors<UpdateAirline>(error, setError, t("airlines.update.error"));
+        handleAxiosFieldErrors<UpdateAirlinePayload>(error, setError, t("airlines.update.error"));
       },
     });
   };
@@ -69,6 +73,7 @@ export const UpsertAirlineDialog = ({
     defaultValues: {
       name: currentAirline?.name ?? "",
       description: currentAirline?.description ?? "",
+      flightsCount: currentAirline?.flightsCount ?? 0,
     },
   });
 
@@ -89,7 +94,7 @@ export const UpsertAirlineDialog = ({
   const onSubmit: SubmitHandler<UpsertAirlineFormData> = (data) => {
     const payload = {
       name: data.name ?? "",
-      description: data.description,
+      description: data.description ?? "",
     };
 
     if (isNewAirline) {

@@ -11,7 +11,7 @@ import {
   useUpdateCityMutation,
 } from "@/services/cities/actions";
 import { getCitySchema } from "@/services/cities/schemas";
-import type { City, CreateCity, UpdateCity } from "@/services/cities/types";
+import type { City, CreateCityPayload, UpdateCityPayload } from "@/services/cities/types";
 import type { UpsertCityFormData } from "@/services/cities/types";
 import { handleAxiosFieldErrors } from "@/utils";
 
@@ -36,6 +36,32 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
     { cityId },
     { enabled: !!currentCity },
   );
+
+  const handleCreate = (payload: CreateCityPayload) => {
+    createCity(payload, {
+      onSuccess: () => {
+        toast.success(t("cities.create.success"));
+        onOpenChange(false);
+        reset();
+      },
+      onError: (error) => {
+        handleAxiosFieldErrors<CreateCityPayload>(error, setError, t("cities.create.error"));
+      },
+    });
+  };
+
+  const handleUpdate = (payload: UpdateCityPayload) => {
+    updateCity(payload, {
+      onSuccess: () => {
+        toast.success(t("cities.update.success"));
+        onOpenChange(false);
+        reset();
+      },
+      onError: (error) => {
+        handleAxiosFieldErrors<UpdateCityPayload>(error, setError, t("cities.update.error"));
+      },
+    });
+  };
 
   const cityAirlineIds = Array.isArray(cityAirlines)
     ? cityAirlines.map((a: { id: number }) => {
@@ -62,6 +88,8 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
     defaultValues: {
       name: currentCity?.name ?? "",
       airline_ids: isNewCity ? undefined : cityAirlineIds.map(Number),
+      incomingFlights: currentCity?.incomingFlights ?? 0,
+      outgoingFlights: currentCity?.outgoingFlights ?? 0,
     },
   });
 
@@ -79,7 +107,7 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
     if (!isOpen) {
       hasResetRef.current = false;
     }
-  }, [isOpen, currentCity, cityAirlines, reset]);
+  }, [isOpen, currentCity, cityAirlines, cityAirlineIds, isNewCity, reset]);
 
   const onSubmit: SubmitHandler<UpsertCityFormData> = (data) => {
     const payload = {
@@ -88,34 +116,10 @@ export const UpsertCityDialog = ({ city, isOpen, onOpenChange }: UpsertCityDialo
     };
 
     if (isNewCity) {
-      return createCity(
-        { name: payload.name },
-        {
-          onSuccess: () => {
-            toast.success(t("cities.create.success"));
-            onOpenChange(false);
-            reset();
-          },
-          onError: (error) => {
-            handleAxiosFieldErrors<CreateCity>(error, setError, t("cities.create.error"));
-          },
-        },
-      );
+      return handleCreate(payload);
     }
 
-    return updateCity(
-      { ...payload, id: currentCity.id },
-      {
-        onSuccess: () => {
-          toast.success(t("cities.update.success"));
-          onOpenChange(false);
-          reset();
-        },
-        onError: (error) => {
-          handleAxiosFieldErrors<UpdateCity>(error, setError, t("cities.update.error"));
-        },
-      },
-    );
+    return handleUpdate({ ...payload, id: currentCity.id });
   };
 
   const handleOpenChange = (open: boolean) => {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useCallback } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
@@ -8,6 +9,7 @@ import { paginationValidationWithDefaults, usePagination } from "@/hooks";
 import { useTranslation } from "@/i18n";
 import { useAllAirlinesQuery } from "@/services/airlines/actions";
 import { useAirlineCitiesQuery, useCitiesListQuery } from "@/services/cities/actions";
+import { getList } from "@/services/schemas";
 import { UpsertCityDialog } from "./-components/upsert-city-dialog";
 import { useCitiesTable } from "./-hooks/use-cities-table";
 
@@ -47,9 +49,16 @@ const CityPage = () => {
   const isLoading = appliedAirlineFilter ? isLoadingAirlineCities : isLoadingAllCities;
   const isSuccess = appliedAirlineFilter ? isSuccessAirlineCities : isSuccessAllCities;
 
-  const lastPage = citiesListData?.meta?.lastPage;
-  const pageSize = citiesListData?.meta?.perPage ?? DEFAULT_PAGE_SIZE;
-  const totalItems = citiesListData?.meta?.total ?? 0;
+  const { lastPage, pageSize, totalItems } = getList(citiesListData, DEFAULT_PAGE_SIZE);
+  type Pagination = { pageIndex: number; pageSize: number };
+  const handlePaginationChange = useCallback(
+    (updater: Pagination | ((p: Pagination) => Pagination)) => {
+      const current: Pagination = { pageIndex, pageSize };
+      const next = typeof updater === "function" ? updater(current) : updater;
+      changePage(next);
+    },
+    [changePage, pageIndex, pageSize],
+  );
 
   useEffect(() => {
     if (isSuccess && lastPage && page > lastPage) {
@@ -60,18 +69,7 @@ const CityPage = () => {
   const table = useCitiesTable({
     data: citiesListData?.data ?? [],
     state: { pagination: { pageIndex, pageSize } },
-    onPaginationChange: (
-      updater:
-        | ((pagination: { pageIndex: number; pageSize: number }) => {
-            pageIndex: number;
-            pageSize: number;
-          })
-        | { pageIndex: number; pageSize: number },
-    ) => {
-      if (typeof updater === "function") {
-        changePage(updater({ pageIndex, pageSize }));
-      }
-    },
+    onPaginationChange: handlePaginationChange,
     pageCount: lastPage,
     meta: { totalItems },
   });
@@ -98,10 +96,10 @@ const CityPage = () => {
                 <option value="">
                   {isLoadingAirlines ? t("common.loading") : t("airlines.all")}
                 </option>
-                {airlines.map((airline) => {
+                {airlines.map(({ id, name }) => {
                   return (
-                    <option key={airline.id} value={airline.id.toString()}>
-                      {airline.name}
+                    <option key={id} value={id.toString()}>
+                      {name}
                     </option>
                   );
                 })}

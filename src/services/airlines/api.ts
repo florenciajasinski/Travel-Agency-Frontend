@@ -4,7 +4,12 @@ import { z } from "zod";
 import { publicApi } from "@/config/api";
 import { parsePaginatedResponse } from "@/services/schemas";
 import { airlineSchema } from "./schemas";
-import type { Airline, AirlineRequestParams, CreateAirline, UpdateAirline } from "./types";
+import type {
+  Airline,
+  AirlineRequestParams,
+  CreateAirlinePayload,
+  UpdateAirlinePayload,
+} from "./types";
 
 export const getAirlinesList = async ({ page }: AirlineRequestParams) => {
   const response = await publicApi.get("airlines", {
@@ -20,14 +25,14 @@ export const deleteAirline = async (id: Airline["id"]) => {
   return response;
 };
 
-export const createAirline = async (data: CreateAirline) => {
+export const createAirline = async (data: CreateAirlinePayload) => {
   const payload = deepSnakeKeys(data);
   const response = await publicApi.post("airlines", payload);
 
   return response;
 };
 
-export const updateAirline = async (data: UpdateAirline) => {
+export const updateAirline = async (data: UpdateAirlinePayload) => {
   const payload = deepSnakeKeys(data);
   const response = await publicApi.put(`airlines/${data.id}`, payload);
 
@@ -35,17 +40,15 @@ export const updateAirline = async (data: UpdateAirline) => {
 };
 
 export const getAllAirlines = async (): Promise<Airline[]> => {
-  const response = await publicApi.get("airlines");
-  if (response.data && response.data.data && Array.isArray(response.data.data)) {
-    const paginatedResult = parsePaginatedResponse(z.array(airlineSchema), response.data);
+  const { data: airlinesData } = await publicApi.get("airlines");
+  if (airlinesData && Array.isArray(airlinesData.data)) {
+    const { data } = parsePaginatedResponse(z.array(airlineSchema), airlinesData);
 
-    return paginatedResult.data;
+    return data;
   }
 
-  if (Array.isArray(response.data)) {
-    const airlinesArray = z.array(airlineSchema).parse(response.data);
-
-    return airlinesArray;
+  if (Array.isArray(airlinesData)) {
+    return z.array(airlineSchema).parse(airlinesData);
   }
 
   return [];

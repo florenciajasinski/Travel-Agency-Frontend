@@ -123,13 +123,7 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
   };
 
   const onSubmit: SubmitHandler<CreateFlightPayload> = (data) => {
-    const payload = {
-      airline_id: data.airline_id,
-      departure_city_id: data.departure_city_id,
-      arrival_city_id: data.arrival_city_id,
-      departure_time: data.departure_time,
-      arrival_time: data.arrival_time,
-    };
+    const payload = { ...data };
 
     if (isNewFlight) {
       return handleCreate(payload);
@@ -138,13 +132,17 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
     return handleUpdate({ id: currentFlight!.id, ...payload });
   };
 
-  const handleAirlineChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleFlightChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const id = Number(e.target.value);
+    reset({
+      airline_id: id,
+      departure_city_id: 0,
+      arrival_city_id: 0,
+      departure_time: "",
+      arrival_time: "",
+    });
     setSelectedAirlineId(id);
-    setValue("airline_id", id);
-    setValue("departure_city_id", 0);
-    setValue("arrival_city_id", 0);
-    clearErrors(["departure_city_id", "arrival_city_id"]);
+    clearErrors();
   };
 
   const watched = {
@@ -184,7 +182,7 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
                   return v === "" ? 0 : Number(v);
                 },
               })}
-              onChange={handleAirlineChange}
+              onChange={handleFlightChange}
               value={selectedAirlineId ? String(selectedAirlineId) : ""}
             >
               <option value="">{t("airlines.select")}</option>

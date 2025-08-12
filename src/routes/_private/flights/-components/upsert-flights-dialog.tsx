@@ -65,7 +65,6 @@ export const UpsertFlightDialog = ({ flight, isOpen, onOpenChange }: UpsertFligh
     register,
     reset,
     setError,
-    setValue,
     watch,
   } = useForm<CreateFlightPayload>({
     mode: "onTouched",
